@@ -32,9 +32,6 @@ public:
 
     // All objects to be rendered in scene
     std::list< std::unique_ptr<Object> > objects;
-
-    // Lights, in this case using only simple directional diffuse lighting
-    glm::vec3 lightDirection{-1.0f, -1.0f, -1.0f};
 };
 
 #endif // _PPGSO_SCENE_H

@@ -38,6 +38,5 @@ public:
      * @param v - camera projection plane vertical coordinate [-1,1]
      * @return Normalized vector from camera position to position on the camera projection plane
      */
-    glm::vec3 cast(double u, double v);
 };
 

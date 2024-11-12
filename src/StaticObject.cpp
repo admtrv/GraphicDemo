@@ -13,9 +13,6 @@ std::unique_ptr<ppgso::Texture> StaticObject::texture;
 std::unique_ptr<ppgso::Shader> StaticObject::shader;
 
 StaticObject::StaticObject() {
-    // Set random scale speed and rotation
-    scale *= glm::linearRand(1.0f, 3.0f);
-    rotation = glm::ballRand(ppgso::PI);
 
     // Initialize static resources if needed
     //if (!shader) shader = std::make_unique<ppgso::Shader>(diffuse_vert_glsl, diffuse_frag_glsl);

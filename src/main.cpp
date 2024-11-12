@@ -24,6 +24,7 @@ const unsigned int HEIGHT = 512;
 class SceneWindow : public ppgso::Window {
 private:
     Scene scene;
+    Object* SelectedObject;
 
     /*!
     * Reset and initialize the game scene
@@ -48,6 +49,7 @@ private:
             Table->color = glm::vec3(0.65f,0.16f,0.16f);
             Table->position = glm::vec3(-5,0.5,0);
             Table->scale = glm::vec3(1,0.5,2);
+            SelectedObject = Table.get();
             scene.objects.push_back(std::move(Table));
 
     }
@@ -70,26 +72,6 @@ public:
 
         initScene();
     }
-    /*!
-    * Handles pressed key when the window is focused
-    * @param key Key code of the key being pressed/released
-    * @param scanCode Scan code of the key being pressed/released
-    * @param action Action indicating the key state change
-    * @param mods Additional modifiers to consider
-    */
-    /*void onKey(int key, int scanCode, int action, int mods) override {
-        scene.keyboard[key] = action;
-
-        // Reset
-        if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-            initScene();
-        }
-
-        // Pause
-        if (key == GLFW_KEY_P && action == GLFW_PRESS) {
-            animate = !animate;
-        }
-    }*/
 
     /*!
     * Window update implementation that will be called automatically from pollEvents
