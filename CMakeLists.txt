@@ -105,15 +105,36 @@ target_include_directories(ppgso PUBLIC
 # TARGETS
 #
 
-add_executable(src
+add_executable(Herna
         src/main.cpp
         src/scene.cpp
         src/camera.cpp
         src/object.cpp
         src/StaticObject.cpp)
-target_link_libraries(src ppgso shaders)
-install(TARGETS src DESTINATION .)
-add_custom_command(TARGET src POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/ ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(Herna ppgso shaders)
+install(TARGETS Herna DESTINATION .)
+add_custom_command(TARGET Herna POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/ ${CMAKE_CURRENT_BINARY_DIR})
+
+add_executable(HernaKocalka
+        src/mainKocalka.cpp
+        src/scene.cpp
+        src/camera.cpp
+        src/object.cpp
+        src/StaticObject.cpp)
+target_link_libraries(HernaKocalka ppgso shaders)
+install(TARGETS HernaKocalka DESTINATION .)
+add_custom_command(TARGET HernaKocalka POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/ ${CMAKE_CURRENT_BINARY_DIR})
+
+add_executable(HernaDmitriev
+        src/mainDmitriev.cpp
+        src/scene.cpp
+        src/camera.cpp
+        src/object.cpp
+        src/StaticObject.cpp)
+target_link_libraries(HernaDmitriev ppgso shaders)
+
+install(TARGETS HernaDmitriev DESTINATION .)
+add_custom_command(TARGET HernaDmitriev POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/ ${CMAKE_CURRENT_BINARY_DIR})
 
 #
 # INSTALLATION
