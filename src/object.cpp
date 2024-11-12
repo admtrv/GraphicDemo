@@ -14,8 +14,8 @@ void Object::generateModelMatrix() {
     modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.z), glm::vec3(0,0,1));
     modelMatrix = glm::translate(modelMatrix, position);
 
-  /*modelMatrix =
-          glm::translate(glm::mat4(1.0f), position)
-          * glm::orientate4(rotation)
-          * glm::scale(glm::mat4(1.0f), scale);*/
+    /*modelMatrix =
+        glm::translate(glm::mat4(1.0f), position)
+        * glm::orientate4(rotation)
+        * glm::scale(glm::mat4(1.0f), scale);*/
 }
