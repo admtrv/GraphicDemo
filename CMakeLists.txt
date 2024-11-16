@@ -120,6 +120,7 @@ add_executable(HernaKocalka
         src/scene.cpp
         src/camera.cpp
         src/object.cpp
+        src/DebugCameraControl.cpp
         src/StaticObject.cpp)
 target_link_libraries(HernaKocalka ppgso shaders)
 install(TARGETS HernaKocalka DESTINATION .)

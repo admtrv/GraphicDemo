@@ -14,6 +14,7 @@
 
 #include "camera.h"
 #include "scene.h"
+#include "DebugCameraControl.h"
 
 const unsigned int WIDTH = 1024;
 const unsigned int HEIGHT = 512;
@@ -24,7 +25,7 @@ const unsigned int HEIGHT = 512;
 class SceneWindow : public ppgso::Window {
 private:
     Scene scene;
-    Object* SelectedObject;
+    std::unique_ptr<DebugCameraControl> debugCamera;
 
     /*!
     * Reset and initialize the game scene
@@ -37,6 +38,7 @@ private:
         auto camera = std::make_unique<Camera>(120.0f, (float)width/(float)height, 0.1f, 100.0f);
         camera->position = glm::vec3(-10,1,0);
         camera->direction = glm::vec3(1,-0.25,0);
+        debugCamera = std::make_unique<DebugCameraControl>(camera.get());
         scene.camera = std::move(camera);
 
 
@@ -49,7 +51,6 @@ private:
             Table->color = glm::vec3(0.65f,0.16f,0.16f);
             Table->position = glm::vec3(-5,0.5,0);
             Table->scale = glm::vec3(1,0.5,2);
-            SelectedObject = Table.get();
             scene.objects.push_back(std::move(Table));
 
     }
@@ -74,6 +75,17 @@ public:
     }
 
     /*!
+     * Handles pressed key when the window is focused
+     * @param key Key code of the key being pressed/released
+     * @param scanCode Scan code of the key being pressed/released
+     * @param action Action indicating the key state change
+     * @param mods Additional modifiers to consider
+     */
+    void onKey(int key, int scanCode, int action, int mods) override {
+        debugCamera->keyboard[key] = action;
+    }
+
+    /*!
     * Window update implementation that will be called automatically from pollEvents
     */
     void onIdle() override {
@@ -91,6 +103,7 @@ public:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Update and render all objects
+        debugCamera->Update(dt);
         scene.update(dt);
         scene.render();
         }
