@@ -22,13 +22,13 @@ StaticObject::StaticObject() {
     color = glm::vec3(1,0,0);
 }
 
-bool StaticObject::update(Scene &scene, float dt) {
+bool StaticObject::updateInternal(Scene &scene, float dt) {
     generateModelMatrix();
     return true;
 }
 
 
-void StaticObject::render(Scene &scene) {
+void StaticObject::renderInternal(Scene &scene) {
     shader->use();
 
     // Set up light

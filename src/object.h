@@ -20,6 +20,10 @@ public:
     Object(const Object&) = default;
     Object(Object&&) = default;
     virtual ~Object() {};
+    Object* parent = NULL;
+    std::list< std::unique_ptr<Object> > children;
+
+    void addChild(std::unique_ptr<Object> child);
 
     /*!
     * Update Object parameters, usually used to update the modelMatrix based on position, scale and rotation
@@ -28,14 +32,30 @@ public:
     * @param dt - Time delta for animation purposes
     * @return true to delete the object
     */
-    virtual bool update(Scene &scene, float dt) = 0;
+    bool update(Scene &scene, float dt);
 
     /*!
     * Render the object in the scene
     * @param scene
     */
-    virtual void render(Scene &scene) = 0;
+    void render(Scene &scene);
 
+
+    /*!
+    * Update Object parameters, usually used to update the modelMatrix based on position, scale and rotation
+    *
+    * @param scene - Reference to the Scene the object is rendered in
+    * @param dt - Time delta for animation purposes
+    * @return true to delete the object
+    */
+    virtual bool updateInternal(Scene &scene, float dt) = 0;
+
+
+    /*!
+    * Render the object in the scene
+    * @param scene
+    */
+    virtual void renderInternal(Scene &scene) = 0;
 
     // Object properties
     glm::vec3 position{0,0,0};

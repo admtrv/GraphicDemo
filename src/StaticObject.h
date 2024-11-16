@@ -32,13 +32,13 @@ public:
      * @param dt Time delta for animation purposes
      * @return
      */
-    bool update(Scene &scene, float dt) override;
+    bool updateInternal(Scene &scene, float dt) override;
 
     /*!
      * Render Static Object
      * @param scene Scene to render in
      */
-    void render(Scene &scene) override;
+    void renderInternal(Scene &scene) override;
 
 private:
 };

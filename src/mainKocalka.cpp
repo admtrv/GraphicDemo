@@ -35,7 +35,7 @@ private:
         scene.objects.clear();
 
         // Create a camera
-        auto camera = std::make_unique<Camera>(120.0f, (float)width/(float)height, 0.1f, 100.0f);
+        auto camera = std::make_unique<Camera>(60.0f, (float)width/(float)height, 0.1f, 100.0f);
         camera->position = glm::vec3(-10,1,0);
         camera->direction = glm::vec3(1,-0.25,0);
         debugCamera = std::make_unique<DebugCameraControl>(camera.get());
@@ -47,10 +47,18 @@ private:
             FloorObject->position = glm::vec3(0,0,0);
             FloorObject->scale = glm::vec3(50,0.5f,50);
             scene.objects.push_back(std::move(FloorObject));
+
             auto Table = std::make_unique<StaticObject>();
             Table->color = glm::vec3(0.65f,0.16f,0.16f);
             Table->position = glm::vec3(-5,0.5,0);
-            Table->scale = glm::vec3(1,0.5,2);
+            Table->scale = glm::vec3(0.2,1,0.2);
+
+            auto TableTop = std::make_unique<StaticObject>();
+            TableTop->color = glm::vec3(0.65f,0.16f,0.16f);
+            TableTop->position = glm::vec3(0,0.5,0);
+            TableTop->scale = glm::vec3(3,0.1,3);
+            Table->addChild(std::move(TableTop));
+
             scene.objects.push_back(std::move(Table));
 
     }
