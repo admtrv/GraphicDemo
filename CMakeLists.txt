@@ -105,33 +105,50 @@ target_include_directories(ppgso PUBLIC
 # TARGETS
 #
 
+# main
 add_executable(Herna
         src/main.cpp
-        src/scene.cpp
-        src/camera.cpp
-        src/object.cpp
-        src/StaticObject.cpp)
+
+        src/scene/Scene.cpp
+
+        src/object/Object.cpp
+        src/object/StaticObject.cpp
+
+        src/camera/Camera.cpp
+        src/camera/DebugCamera.cpp
+)
 target_link_libraries(Herna ppgso shaders)
 install(TARGETS Herna DESTINATION .)
 add_custom_command(TARGET Herna POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/ ${CMAKE_CURRENT_BINARY_DIR})
 
+# main_kocalka
 add_executable(HernaKocalka
-        src/mainKocalka.cpp
-        src/scene.cpp
-        src/camera.cpp
-        src/object.cpp
-        src/DebugCameraControl.cpp
-        src/StaticObject.cpp)
+        src/main_kocalka.cpp
+
+        src/scene/Scene.cpp
+
+        src/object/Object.cpp
+        src/object/StaticObject.cpp
+
+        src/camera/Camera.cpp
+        src/camera/DebugCamera.cpp
+)
 target_link_libraries(HernaKocalka ppgso shaders)
 install(TARGETS HernaKocalka DESTINATION .)
 add_custom_command(TARGET HernaKocalka POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/ ${CMAKE_CURRENT_BINARY_DIR})
 
+# main_dmitriev
 add_executable(HernaDmitriev
-        src/mainDmitriev.cpp
-        src/scene.cpp
-        src/camera.cpp
-        src/object.cpp
-        src/StaticObject.cpp)
+        src/main_dmitriev.cpp
+
+        src/scene/Scene.cpp
+
+        src/object/Object.cpp
+        src/object/StaticObject.cpp
+
+        src/camera/Camera.cpp
+        src/camera/DebugCamera.cpp
+)
 target_link_libraries(HernaDmitriev ppgso shaders)
 
 install(TARGETS HernaDmitriev DESTINATION .)

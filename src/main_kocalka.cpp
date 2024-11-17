@@ -1,3 +1,9 @@
+/*
+ * main_kocalka.cpp
+ */
+
+#pragma once
+
 // Example gl_scene
 // - Introduces the concept of a dynamic scene of objects
 // - Uses abstract object interface for Update and Render steps
@@ -12,8 +18,9 @@
 
 #include <ppgso/ppgso.h>
 
-#include "camera.h"
-#include "scene.h"
+#include "scene/Scene.h"
+#include "camera/Camera.h"
+#include "camera/DebugCamera.h"
 
 const unsigned int WIDTH = 1024;
 const unsigned int HEIGHT = 512;
@@ -24,7 +31,7 @@ const unsigned int HEIGHT = 512;
 class SceneWindow : public ppgso::Window {
 private:
     Scene scene;
-    Object* SelectedObject;
+    std::unique_ptr<DebugCamera> debugCamera;
 
     /*!
     * Reset and initialize the game scene
@@ -34,9 +41,10 @@ private:
         scene.objects.clear();
 
         // Create a camera
-        auto camera = std::make_unique<Camera>(120.0f, (float)width/(float)height, 0.1f, 100.0f);
+        auto camera = std::make_unique<Camera>(60.0f, (float)width/(float)height, 0.1f, 100.0f);
         camera->position = glm::vec3(-10,1,0);
         camera->direction = glm::vec3(1,-0.25,0);
+        debugCamera = std::make_unique<DebugCamera>(camera.get());
         scene.camera = std::move(camera);
 
 
@@ -45,11 +53,18 @@ private:
             FloorObject->position = glm::vec3(0,0,0);
             FloorObject->scale = glm::vec3(50,0.5f,50);
             scene.objects.push_back(std::move(FloorObject));
+
             auto Table = std::make_unique<StaticObject>();
             Table->color = glm::vec3(0.65f,0.16f,0.16f);
             Table->position = glm::vec3(-5,0.5,0);
-            Table->scale = glm::vec3(1,0.5,2);
-            SelectedObject = Table.get();
+            Table->scale = glm::vec3(0.2,1,0.2);
+
+            auto TableTop = std::make_unique<StaticObject>();
+            TableTop->color = glm::vec3(0.65f,0.16f,0.16f);
+            TableTop->position = glm::vec3(0,0.5,0);
+            TableTop->scale = glm::vec3(3,0.1,3);
+            Table->addChild(std::move(TableTop));
+
             scene.objects.push_back(std::move(Table));
 
     }
@@ -74,6 +89,17 @@ public:
     }
 
     /*!
+     * Handles pressed key when the window is focused
+     * @param key Key code of the key being pressed/released
+     * @param scanCode Scan code of the key being pressed/released
+     * @param action Action indicating the key state change
+     * @param mods Additional modifiers to consider
+     */
+    void onKey(int key, int scanCode, int action, int mods) override {
+        debugCamera->keyboard[key] = action;
+    }
+
+    /*!
     * Window update implementation that will be called automatically from pollEvents
     */
     void onIdle() override {
@@ -91,6 +117,7 @@ public:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Update and render all objects
+        debugCamera->update(dt);
         scene.update(dt);
         scene.render();
         }

@@ -1,5 +1,5 @@
 /*
- * main.cpp
+ * main_dmitriev.cpp
  */
 
 #pragma once
@@ -36,6 +36,7 @@ private:
         FloorObject->scale = glm::vec3(50,0.5f,50);
         scene.objects.push_back(std::move(FloorObject));
 
+        // Add table
         auto Table = std::make_unique<StaticObject>();
         Table->color = glm::vec3(0.65f,0.16f,0.16f);
         Table->position = glm::vec3(-5,0.5,0);
@@ -55,7 +56,6 @@ public:
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
 
-        // Enable polygon culling
         glEnable(GL_CULL_FACE);
         glFrontFace(GL_CCW);
         glCullFace(GL_BACK);
