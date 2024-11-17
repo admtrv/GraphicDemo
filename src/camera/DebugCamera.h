@@ -8,7 +8,7 @@
 
 #include "Camera.h"
 
-#define CAMERA_MOVEMENT_SPEED 0.5f
+#define CAMERA_MOVEMENT_SPEED 15.0f
 #define CAMERA_ROTATION_SPEED 20.0f
 
 class DebugCamera {

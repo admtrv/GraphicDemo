@@ -16,6 +16,8 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data)
 
+file(COPY ${CMAKE_SOURCE_DIR}/data DESTINATION ${CMAKE_BINARY_DIR})
+
 # Use add_resources function to convert .glsl to a .cpp files which will be compiled into a separate static library
 include(add_resources)
 
@@ -158,7 +160,6 @@ add_custom_command(TARGET HernaDmitriev POST_BUILD COMMAND ${CMAKE_COMMAND} -E c
 # INSTALLATION
 #
 
-file(COPY "data/" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 install(DIRECTORY data/ DESTINATION .)
 
 

@@ -12,8 +12,14 @@
 #include "camera/Camera.h"
 #include "camera/DebugCamera.h"
 
-const unsigned int WIDTH = 1024;
-const unsigned int HEIGHT = 512;
+#define WINDOW_WIDTH    1024
+#define WINDOW_HEIGHT   512
+
+#define ROOM_WIDTH              25.0f
+#define ROOM_DEPTH              30.0f
+#define ROOM_HEIGHT             10.0f
+#define ROOM_WALL_THICKNESS     0.2f
+
 
 class SceneWindow : public ppgso::Window {
 private:
@@ -21,38 +27,51 @@ private:
     std::unique_ptr<DebugCamera> debugCamera;
 
     void initScene() {
-        scene.objects.clear();
+        if (!scene.objects.empty()) return;
 
-        // Create a camera
-        auto camera = std::make_unique<Camera>(60.0f, (float)width/(float)height, 0.1f, 100.0f);
-        camera->position = glm::vec3(-10,1,0);
-        camera->direction = glm::vec3(1,-0.25,0);
+        // Create camera
+        auto camera = std::make_unique<Camera>(60.0f, (float)width / (float)height, 0.1f, 100.0f);
+        camera->position = glm::vec3(0.0f, 5.0f, 20.0f);
+        camera->direction = glm::vec3(0.0f, 0.0f, -1.0f);
         debugCamera = std::make_unique<DebugCamera>(camera.get());
         scene.camera = std::move(camera);
 
-        // Add floor
-        auto FloorObject = std::make_unique<StaticObject>();
-        FloorObject->position = glm::vec3(0,0,0);
-        FloorObject->scale = glm::vec3(50,0.5f,50);
-        scene.objects.push_back(std::move(FloorObject));
+        // Floor
+        auto floor = std::make_unique<StaticObject>("floor.bmp");
+        floor->position = glm::vec3(0.0f, 0.0f, 0.0f);
+        floor->scale = glm::vec3(ROOM_WIDTH, ROOM_WALL_THICKNESS, ROOM_DEPTH);
+        scene.objects.push_back(std::move(floor));
 
-        // Add table
-        auto Table = std::make_unique<StaticObject>();
-        Table->color = glm::vec3(0.65f,0.16f,0.16f);
-        Table->position = glm::vec3(-5,0.5,0);
-        Table->scale = glm::vec3(0.2,1,0.2);
+        // Ceiling
+        auto ceiling = std::make_unique<StaticObject>("ceiling.bmp");
+        ceiling->position = glm::vec3(0.0f, ROOM_HEIGHT, 0.0f);
+        ceiling->scale = glm::vec3(ROOM_WIDTH, ROOM_WALL_THICKNESS, ROOM_DEPTH);
+        scene.objects.push_back(std::move(ceiling));
 
-        auto TableTop = std::make_unique<StaticObject>();
-        TableTop->color = glm::vec3(0.65f,0.16f,0.16f);
-        TableTop->position = glm::vec3(0,0.5,0);
-        TableTop->scale = glm::vec3(3,0.1,3);
-        Table->addChild(std::move(TableTop));
+        // Back wall
+        auto backWall = std::make_unique<StaticObject>("wall.bmp");
+        backWall->position = glm::vec3(0.0f, ROOM_HEIGHT / 2.0f, -ROOM_DEPTH / 2.0f);
+        backWall->scale = glm::vec3(ROOM_WIDTH, ROOM_HEIGHT, ROOM_WALL_THICKNESS);
+        scene.objects.push_back(std::move(backWall));
 
-        scene.objects.push_back(std::move(Table));
+        // Left wall
+        auto leftWall = std::make_unique<StaticObject>("wall.bmp");
+        leftWall->position = glm::vec3(-ROOM_WIDTH / 2.0f, ROOM_HEIGHT / 2.0f, 0.0f);
+        leftWall->scale = glm::vec3(ROOM_DEPTH, ROOM_HEIGHT, ROOM_WALL_THICKNESS);
+        leftWall->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
+        scene.objects.push_back(std::move(leftWall));
+
+        // Right wall
+        auto rightWall = std::make_unique<StaticObject>("wall.bmp");
+        rightWall->position = glm::vec3(ROOM_WIDTH / 2.0f, ROOM_HEIGHT / 2.0f, 0.0f);
+        rightWall->scale = glm::vec3(ROOM_DEPTH, ROOM_HEIGHT, ROOM_WALL_THICKNESS);
+        rightWall->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
+        scene.objects.push_back(std::move(rightWall));
+
     }
 
 public:
-    SceneWindow() : Window{"gl9_scene", WIDTH, HEIGHT} {
+    SceneWindow() : Window{"Playroom", WINDOW_WIDTH, WINDOW_HEIGHT} {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
 
