@@ -5,6 +5,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <iostream>
 
 #include "Camera.h"
 
@@ -21,6 +22,7 @@ public:
     void update(float dt);
     void handleMovement(float dt);
     void handleRotation(float dt);
+    void logState();
 
 private:
     Camera *camera;

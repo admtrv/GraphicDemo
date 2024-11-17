@@ -8,6 +8,7 @@ void DebugCamera::update(float dt) {
     handleMovement(dt);
     handleRotation(dt);
     camera->update();
+    logState();
 }
 
 void DebugCamera::handleMovement(float dt) {
@@ -45,4 +46,9 @@ void DebugCamera::handleRotation(float dt) {
     }
 
     camera->direction = glm::normalize(camera->direction);
+}
+
+void DebugCamera::logState() {
+    std::cout << "Position: (" << camera->position.x << ", " << camera->position.y << ", " << camera->position.z << "), "
+              << "Direction: (" << camera->direction.x << ", " << camera->direction.y << ", " << camera->direction.z << ")\n";
 }
