@@ -11,15 +11,10 @@
 #include "scene/Scene.h"
 #include "camera/Camera.h"
 #include "camera/DebugCamera.h"
+#include "object/Room.h"
 
 #define WINDOW_WIDTH    1024
 #define WINDOW_HEIGHT   512
-
-#define ROOM_WIDTH              25.0f
-#define ROOM_DEPTH              30.0f
-#define ROOM_HEIGHT             10.0f
-#define ROOM_WALL_THICKNESS     0.2f
-
 
 class SceneWindow : public ppgso::Window {
 private:
@@ -29,46 +24,23 @@ private:
     void initScene() {
         if (!scene.objects.empty()) return;
 
-        // Create camera
+        // create camera
         auto camera = std::make_unique<Camera>(60.0f, (float)width / (float)height, 0.1f, 100.0f);
         camera->position = glm::vec3(0.0f, 5.0f, 20.0f);
         camera->direction = glm::vec3(0.0f, 0.0f, -1.0f);
         debugCamera = std::make_unique<DebugCamera>(camera.get());
         scene.camera = std::move(camera);
 
-        // Floor
-        auto floor = std::make_unique<StaticObject>("floor.bmp");
-        floor->position = glm::vec3(0.0f, 0.0f, 0.0f);
-        floor->scale = glm::vec3(ROOM_WIDTH, ROOM_WALL_THICKNESS, ROOM_DEPTH);
-        scene.objects.push_back(std::move(floor));
+        // create room
+        auto room = std::make_unique<Room>();
+        auto* roomPtr = room.get();
+        scene.objects.push_back(std::move(room));
 
-        // Ceiling
-        auto ceiling = std::make_unique<StaticObject>("ceiling.bmp");
-        ceiling->position = glm::vec3(0.0f, ROOM_HEIGHT, 0.0f);
-        ceiling->scale = glm::vec3(ROOM_WIDTH, ROOM_WALL_THICKNESS, ROOM_DEPTH);
-        scene.objects.push_back(std::move(ceiling));
-
-        // Back wall
-        auto backWall = std::make_unique<StaticObject>("wall.bmp");
-        backWall->position = glm::vec3(0.0f, ROOM_HEIGHT / 2.0f, -ROOM_DEPTH / 2.0f);
-        backWall->scale = glm::vec3(ROOM_WIDTH, ROOM_HEIGHT, ROOM_WALL_THICKNESS);
-        scene.objects.push_back(std::move(backWall));
-
-        // Left wall
-        auto leftWall = std::make_unique<StaticObject>("wall.bmp");
-        leftWall->position = glm::vec3(-ROOM_WIDTH / 2.0f, ROOM_HEIGHT / 2.0f, 0.0f);
-        leftWall->scale = glm::vec3(ROOM_DEPTH, ROOM_HEIGHT, ROOM_WALL_THICKNESS);
-        leftWall->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
-        scene.objects.push_back(std::move(leftWall));
-
-        // Right wall
-        auto rightWall = std::make_unique<StaticObject>("wall.bmp");
-        rightWall->position = glm::vec3(ROOM_WIDTH / 2.0f, ROOM_HEIGHT / 2.0f, 0.0f);
-        rightWall->scale = glm::vec3(ROOM_DEPTH, ROOM_HEIGHT, ROOM_WALL_THICKNESS);
-        rightWall->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
-        scene.objects.push_back(std::move(rightWall));
+        // create arcade automates
+        roomPtr->addArcades();
 
     }
+
 
 public:
     SceneWindow() : Window{"Playroom", WINDOW_WIDTH, WINDOW_HEIGHT} {

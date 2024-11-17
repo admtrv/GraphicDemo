@@ -104,6 +104,8 @@ namespace ppgso {
       return image;
     }
 
+
+
     void saveBMP(ppgso::Image &image, const std::string &bmp) {
       auto width = image.width;
       auto height = image.height;

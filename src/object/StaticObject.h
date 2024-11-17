@@ -13,16 +13,19 @@
 #include "src/scene/Scene.h"
 #include "src/object/Object.h"
 
-class StaticObject final : public Object {
+class StaticObject : public Object {
 public:
-    explicit StaticObject(const std::string& textureFile = "");
+    explicit StaticObject(const std::string& textureFile = "", const std::string& modelFile = "");
 
     bool updateInternal(Scene& scene, float dt) override;   // update object
     void renderInternal(Scene& scene) override;             // render object
 
 private:
     // shared resources between instances
-    static std::unique_ptr<ppgso::Mesh> mesh;
+    static std::unique_ptr<ppgso::Mesh> defaultMesh;
     static std::unique_ptr<ppgso::Shader> shader;
-    std::unique_ptr<ppgso::Texture> texture;
+    static std::unique_ptr<ppgso::Texture> defaultTexture;
+
+    std::unique_ptr<ppgso::Mesh> mesh;       // uniq mesh
+    std::unique_ptr<ppgso::Texture> texture; // uniq texture
 };
