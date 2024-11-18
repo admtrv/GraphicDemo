@@ -7,6 +7,7 @@
 #include "src/object/StaticObject.h"
 #include "src/object/Arcade.h"
 #include "src/object/Billiard.h"
+#include "src/object/Dartboard.h"
 
 #include <vector>
 #include <memory>
@@ -26,6 +27,7 @@ public:
 
     void addArcades();
     void addBilliards();
+    void addDartboards();
 private:
     std::vector<std::unique_ptr<StaticObject>> components;
 

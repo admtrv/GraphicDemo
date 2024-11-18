@@ -46,6 +46,20 @@ void Room::addBilliards() {
     generateBilliards();
 }
 
+void Room::addDartboards() {
+    float offsetX = ROOM_WIDTH / 5.0f;
+    float dartboardY = ROOM_HEIGHT / 2.0f;
+    float dartboardZ = -(ROOM_DEPTH / 2.0f) + 0.1f;
+
+    auto leftDartboard = std::make_unique<Dartboard>();
+    leftDartboard->position = glm::vec3(-offsetX, dartboardY, dartboardZ);
+    components.push_back(std::move(leftDartboard));
+
+    auto rightDartboard = std::make_unique<Dartboard>();
+    rightDartboard->position = glm::vec3(offsetX, dartboardY, dartboardZ);
+    components.push_back(std::move(rightDartboard));
+}
+
 // random arcade generation
 void Room::generateArcade() {
     std::random_device rd;
