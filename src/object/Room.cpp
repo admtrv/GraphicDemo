@@ -44,12 +44,6 @@ void Room::addArcades() {
 
 // random arcade generation
 void Room::generateArcade() {
-    std::vector<std::string> arcadeTextures = {
-            "arcade.bmp",
-            "lena.bmp",     // just for test
-            "floor.bmp"     // just for test
-    };
-
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> textureDist(0, arcadeTextures.size() - 1);

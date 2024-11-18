@@ -11,6 +11,8 @@
 #define ARCADE_HEIGHT   (3.0f * ARCADE_FACTOR)
 #define ARCADE_NUM      5
 
+extern std::vector<std::string> arcadeTextures;
+
 class Arcade : public StaticObject {
 public:
     explicit Arcade(const std::string& textureFile, const std::string& modelFile = "arcade.obj");
