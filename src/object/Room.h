@@ -8,6 +8,7 @@
 #include "src/object/Arcade.h"
 #include "src/object/Billiard.h"
 #include "src/object/Dartboard.h"
+#include "src/object/Chandelier.h"
 
 #include <vector>
 #include <memory>
@@ -28,6 +29,7 @@ public:
     void addArcades();
     void addBilliards();
     void addDartboards();
+    void addChandeliers();
 private:
     std::vector<std::unique_ptr<StaticObject>> components;
 

@@ -42,6 +42,9 @@ private:
         // create billiard tables
         roomPtr->addBilliards();
 
+        // create chandeliers above billiard tables
+        roomPtr->addChandeliers();
+
         // create dartboards
         roomPtr->addDartboards();
     }

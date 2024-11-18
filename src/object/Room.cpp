@@ -102,6 +102,24 @@ void Room::generateBilliards() {
     }
 }
 
+void Room::addChandeliers() {
+    float chandelierY = ROOM_HEIGHT - 4.0f;
+    float startZ = - (ROOM_DEPTH / 2.0f) + BILLIARD_WIDTH * 2.0f;
+    float stepZ = BILLIARD_WIDTH * 2.0f;
+
+    for (int i = 0; i < BILLIARD_NUM; i++) {
+        auto chandelier = std::make_unique<Chandelier>();
+
+        chandelier->position = glm::vec3(
+                (ROOM_WIDTH / 2.0f) - ((ROOM_WALL_THICKNESS / 2.0f) + BILLIARD_LENGTH),
+                chandelierY,
+                startZ + i * stepZ
+        );
+
+        components.push_back(std::move(chandelier));
+    }
+}
+
 
 bool Room::updateInternal(Scene& scene, float dt) {
     for (auto& component : components) {
