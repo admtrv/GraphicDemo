@@ -149,6 +149,7 @@ add_executable(HernaDmitriev
         src/object/StaticObject.cpp
         src/object/Room.cpp
         src/object/Arcade.cpp
+        src/object/Billiard.cpp
 
         src/camera/Camera.cpp
         src/camera/DebugCamera.cpp

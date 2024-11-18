@@ -42,6 +42,10 @@ void Room::addArcades() {
     generateArcade();
 }
 
+void Room::addBilliards() {
+    generateBilliards();
+}
+
 // random arcade generation
 void Room::generateArcade() {
     std::random_device rd;
@@ -66,6 +70,24 @@ void Room::generateArcade() {
         components.push_back(std::move(arcadeMachine));
     }
 }
+
+void Room::generateBilliards() {
+    float startZ = - (ROOM_DEPTH / 2.0f) + BILLIARD_WIDTH * 2.0f;
+    float stepZ = BILLIARD_WIDTH * 2.0f;
+
+    for (int i = 0; i < BILLIARD_NUM; i++) {
+        auto billiard = std::make_unique<Billiard>();
+
+        billiard->position = glm::vec3(
+                (ROOM_WIDTH / 2.0f) - ((ROOM_WALL_THICKNESS / 2.0f) + BILLIARD_LENGTH),
+                BILLIARD_HEIGHT / 2.0f,
+                startZ + i * stepZ
+        );
+
+        components.push_back(std::move(billiard));
+    }
+}
+
 
 bool Room::updateInternal(Scene& scene, float dt) {
     for (auto& component : components) {

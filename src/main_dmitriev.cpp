@@ -39,6 +39,8 @@ private:
         // create arcade automates
         roomPtr->addArcades();
 
+        // create billiard tables
+        roomPtr->addBilliards();
     }
 
 
@@ -59,20 +61,20 @@ public:
     }
 
     void onIdle() override {
-        // Track time
+        // track time
         static auto time = (float) glfwGetTime();
 
-        // Compute time delta
+        // compute time delta
         float dt = (float) glfwGetTime() - time;
 
         time = (float) glfwGetTime();
 
-        // Set gray background
+        // set gray background
         glClearColor(.5f, .5f, .5f, 0);
-        // Clear depth and color buffers
+        // clear depth and color buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Update and render all objects
+        // update and render all objects
         debugCamera->update(dt);
         scene.update(dt);
         scene.render();
@@ -80,10 +82,10 @@ public:
 };
 
 int main() {
-    // Initialize our window
+    // initialize window
     SceneWindow window;
 
-    // Main execution loop
+    // main loop
     while (window.pollEvents()) {}
 
     return EXIT_SUCCESS;
