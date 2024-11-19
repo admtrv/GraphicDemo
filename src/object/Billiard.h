@@ -14,5 +14,5 @@
 
 class Billiard : public StaticObject {
 public:
-    explicit Billiard(const std::string& textureFile = "billiard.bmp", const std::string& modelFile = "billiard.obj");
+    explicit Billiard(const std::string& textureFile = "billiard.bmp", const std::string& modelFile = "billiardTable.obj");
 };

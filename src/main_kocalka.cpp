@@ -1,133 +1,97 @@
 /*
- * main_kocalka.cpp
+ * main_dmitriev.cpp
  */
 
 #pragma once
 
-// Example gl_scene
-// - Introduces the concept of a dynamic scene of objects
-// - Uses abstract object interface for Update and Render steps
-// - Creates a simple game scene with Player, Asteroid and Space objects
-// - Contains a generator object that does not render but adds Asteroids to the scene
-// - Some objects use shared resources and all object deallocations are handled automatically
-// - Controls: LEFT, RIGHT, "R" to reset, SPACE to fire
-
 #include <iostream>
-#include <map>
 #include <list>
-
 #include <ppgso/ppgso.h>
 
 #include "scene/Scene.h"
 #include "camera/Camera.h"
 #include "camera/DebugCamera.h"
+#include "object/Room.h"
 
-const unsigned int WIDTH = 1024;
-const unsigned int HEIGHT = 512;
+#define WINDOW_WIDTH    2048
+#define WINDOW_HEIGHT   1024
 
-/*!
- * Custom windows for our simple game
- */
 class SceneWindow : public ppgso::Window {
 private:
     Scene scene;
     std::unique_ptr<DebugCamera> debugCamera;
 
-    /*!
-    * Reset and initialize the game scene
-    * Creating unique smart pointers to objects that are stored in the scene object list
-    */
     void initScene() {
-        scene.objects.clear();
+        if (!scene.objects.empty()) return;
 
-        // Create a camera
-        auto camera = std::make_unique<Camera>(60.0f, (float)width/(float)height, 0.1f, 100.0f);
-        camera->position = glm::vec3(-10,1,0);
-        camera->direction = glm::vec3(1,-0.25,0);
+        // create camera
+        auto camera = std::make_unique<Camera>(60.0f, (float)width / (float)height, 0.1f, 100.0f);
+        camera->position = glm::vec3(0.0f, 5.0f, 20.0f);
+        camera->direction = glm::vec3(0.0f, 0.0f, -1.0f);
         debugCamera = std::make_unique<DebugCamera>(camera.get());
         scene.camera = std::move(camera);
 
+        // create room
+        auto room = std::make_unique<Room>();
+        auto* roomPtr = room.get();
+        scene.objects.push_back(std::move(room));
 
-            // Add floor
-            auto FloorObject = std::make_unique<StaticObject>();
-            FloorObject->position = glm::vec3(0,0,0);
-            FloorObject->scale = glm::vec3(50,0.5f,50);
-            scene.objects.push_back(std::move(FloorObject));
+        // create arcade automates
+        roomPtr->addArcades();
 
-            auto Table = std::make_unique<StaticObject>();
-            Table->color = glm::vec3(0.65f,0.16f,0.16f);
-            Table->position = glm::vec3(-5,0.5,0);
-            Table->scale = glm::vec3(0.2,1,0.2);
+        // create billiard tables
+        roomPtr->addBilliards();
 
-            auto TableTop = std::make_unique<StaticObject>();
-            TableTop->color = glm::vec3(0.65f,0.16f,0.16f);
-            TableTop->position = glm::vec3(0,0.5,0);
-            TableTop->scale = glm::vec3(3,0.1,3);
-            Table->addChild(std::move(TableTop));
+        // create chandeliers above billiard tables
+        roomPtr->addChandeliers();
 
-            scene.objects.push_back(std::move(Table));
-
+        // create dartboards
+        roomPtr->addDartboards();
     }
 
-public:
-    /*!
-    * Construct custom game window
-    */
-    SceneWindow() : Window{"gl9_scene", WIDTH, HEIGHT} {
 
-        // Initialize OpenGL state
-        // Enable Z-buffer
+public:
+    SceneWindow() : Window{"Playroom", WINDOW_WIDTH, WINDOW_HEIGHT} {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
 
-        // Enable polygon culling
-        glEnable(GL_CULL_FACE);
+        glDisable(GL_CULL_FACE);
         glFrontFace(GL_CCW);
         glCullFace(GL_BACK);
 
         initScene();
     }
 
-    /*!
-     * Handles pressed key when the window is focused
-     * @param key Key code of the key being pressed/released
-     * @param scanCode Scan code of the key being pressed/released
-     * @param action Action indicating the key state change
-     * @param mods Additional modifiers to consider
-     */
     void onKey(int key, int scanCode, int action, int mods) override {
         debugCamera->keyboard[key] = action;
     }
 
-    /*!
-    * Window update implementation that will be called automatically from pollEvents
-    */
     void onIdle() override {
-        // Track time
+        // track time
         static auto time = (float) glfwGetTime();
 
-        // Compute time delta
+        // compute time delta
         float dt = (float) glfwGetTime() - time;
 
         time = (float) glfwGetTime();
 
-        // Set gray background
+        // set gray background
         glClearColor(.5f, .5f, .5f, 0);
-        // Clear depth and color buffers
+        // clear depth and color buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Update and render all objects
+        // update and render all objects
         debugCamera->update(dt);
         scene.update(dt);
         scene.render();
-        }
-    };
+    }
+};
 
 int main() {
-    // Initialize our window
+    // initialize window
     SceneWindow window;
 
-    // Main execution loop
+    // main loop
     while (window.pollEvents()) {}
 
     return EXIT_SUCCESS;

@@ -91,14 +91,77 @@ void Room::generateBilliards() {
 
     for (int i = 0; i < BILLIARD_NUM; i++) {
         auto billiard = std::make_unique<Billiard>();
+        auto collisionGroup = std::make_unique<CollisionGroup>();
 
         billiard->position = glm::vec3(
                 (ROOM_WIDTH / 2.0f) - ((ROOM_WALL_THICKNESS / 2.0f) + BILLIARD_LENGTH),
                 BILLIARD_HEIGHT / 2.0f,
                 startZ + i * stepZ
         );
+        {
+            auto wall = std::make_unique<BilliardWall>();
+            wall->position = glm::vec3(57.2, 0, 75);
+            wall->scale = glm::vec3(10, 240, 5);
+            wall->collisionGroup = collisionGroup.get();
+            wall->x = 5;
+            wall->y = 120;
+            wall->z = 2.5f;
+            collisionGroup->AddCollider(wall.get());
+            billiard->addChild(std::move(wall));
 
-        components.push_back(std::move(billiard));
+            wall = std::make_unique<BilliardWall>();
+            wall->position = glm::vec3(-57.2, 0, 75);
+            wall->scale = glm::vec3(10, 240, 5);
+            wall->collisionGroup = collisionGroup.get();
+            wall->x = 5;
+            wall->y = 120;
+            wall->z = 2.5f;
+            collisionGroup->AddCollider(wall.get());
+            billiard->addChild(std::move(wall));
+
+            wall = std::make_unique<BilliardWall>();
+            wall->position = glm::vec3(0, 120, 75);
+            wall->scale = glm::vec3(120, 10, 5);
+            wall->collisionGroup = collisionGroup.get();
+            wall->x = 60;
+            wall->y = 5;
+            wall->z = 2.5f;
+            collisionGroup->AddCollider(wall.get());
+            billiard->addChild(std::move(wall));
+
+            wall = std::make_unique<BilliardWall>();
+            wall->position = glm::vec3(0, -120, 75);
+            wall->scale = glm::vec3(120, 10, 5);
+            wall->x = 60;
+            wall->y = 5;
+            wall->z = 2.5f;
+            wall->collisionGroup = collisionGroup.get();
+            collisionGroup->AddCollider(wall.get());
+            billiard->addChild(std::move(wall));
+        }
+
+        auto ball = std::make_unique<BilliardBall>();
+        ball->collisionGroup = collisionGroup.get();
+        ball->position = glm::vec3{0,69,74};
+        ball->speed = glm::vec3(0,-50,0);
+        ball->radius = ball->scale.x/2;
+        collisionGroup->AddCollider(ball.get());
+        billiard->addChild(std::move(ball));
+
+        for (int i = 0; i < 5; i++){
+            for (int j = 0; j <= i; j++){
+                ball = std::make_unique<BilliardBall>();
+                ball->collisionGroup = collisionGroup.get();
+                ball->position = glm::vec3{0-((6.5/2)*i)+6.5*j,-55 -(6.5*i),74};
+                ball->speed = glm::vec3(0,0,0);
+                ball->radius = ball->scale.x/2;
+                collisionGroup->AddCollider(ball.get());
+                billiard->addChild(std::move(ball));
+            }
+        }
+
+        collisionGroups.push_back(std::move(collisionGroup));
+        addChild(std::move(billiard));
     }
 }
 
@@ -123,13 +186,13 @@ void Room::addChandeliers() {
 
 bool Room::updateInternal(Scene& scene, float dt) {
     for (auto& component : components) {
-        component->updateInternal(scene, dt);
+        component->update(scene, dt);
     }
     return true;
 }
 
 void Room::renderInternal(Scene& scene) {
     for (auto& component : components) {
-        component->renderInternal(scene);
+        component->render(scene);
     }
 }

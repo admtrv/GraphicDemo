@@ -9,6 +9,9 @@
 #include "src/object/Billiard.h"
 #include "src/object/Dartboard.h"
 #include "src/object/Chandelier.h"
+#include "src/object/CollisionGroup.h"
+#include "src/object/BilliardBall.h"
+#include "src/object/BilliardWall.h"
 
 #include <vector>
 #include <memory>
@@ -32,6 +35,7 @@ public:
     void addChandeliers();
 private:
     std::vector<std::unique_ptr<StaticObject>> components;
+    std::vector<std::unique_ptr<CollisionGroup>> collisionGroups;
 
     void generateArcade();
     void generateBilliards();
