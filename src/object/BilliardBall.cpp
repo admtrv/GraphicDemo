@@ -69,7 +69,11 @@ bool BilliardBall::updateInternal(Scene &scene, float dt) {
     }
 
     if (moving){
-        speed += -speed*0.005f;
+        glm::vec3 (speedDelta) = -speed * 0.05f;
+        if (glm::length(speedDelta) > 0.05f){
+            speedDelta = glm::normalize(speedDelta) * 0.05f;
+        }
+        speed += speedDelta;
         position += speed*dt;
 
 

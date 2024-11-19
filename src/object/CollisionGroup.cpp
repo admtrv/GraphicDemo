@@ -8,7 +8,6 @@ bool CollisionGroup::CheckCollision(BilliardBall* object, BilliardWall* &boxOut,
     for (auto c : boxColliders){
         if(object->CheckCollision(c)){
             boxOut = c;
-            std::cout << "Wall Collide";
             return true;
         }
     }
@@ -16,7 +15,6 @@ bool CollisionGroup::CheckCollision(BilliardBall* object, BilliardWall* &boxOut,
     for (auto c : sphereColliders){
         if(object != c && object->CheckCollision(c)){
             sphereOut = c;
-            std::cout << "Ball Collide";
             return true;
         }
     }

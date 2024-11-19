@@ -143,7 +143,7 @@ void Room::generateBilliards() {
         auto ball = std::make_unique<BilliardBall>();
         ball->collisionGroup = collisionGroup.get();
         ball->position = glm::vec3{0,69,74};
-        ball->speed = glm::vec3(0,-50,0);
+        ball->speed = glm::vec3(0,-100,0);
         ball->radius = ball->scale.x/2;
         collisionGroup->AddCollider(ball.get());
         billiard->addChild(std::move(ball));
