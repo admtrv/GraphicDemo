@@ -131,9 +131,20 @@ add_executable(HernaKocalka
 
         src/object/Object.cpp
         src/object/StaticObject.cpp
+        src/object/Room.cpp
+        src/object/Arcade.cpp
+        src/object/Billiard.cpp
+        src/object/Dartboard.cpp
+        src/object/Chandelier.cpp
 
         src/camera/Camera.cpp
         src/camera/DebugCamera.cpp
+        src/object/BilliardBall.cpp
+        src/object/BilliardBall.h
+        src/object/BilliardWall.cpp
+        src/object/BilliardWall.h
+        src/object/CollisionGroup.cpp
+        src/object/CollisionGroup.h
 )
 target_link_libraries(HernaKocalka ppgso shaders)
 install(TARGETS HernaKocalka DESTINATION .)
@@ -155,6 +166,12 @@ add_executable(HernaDmitriev
 
         src/camera/Camera.cpp
         src/camera/DebugCamera.cpp
+        src/object/BilliardBall.cpp
+        src/object/BilliardBall.h
+        src/object/BilliardWall.cpp
+        src/object/BilliardWall.h
+        src/object/CollisionGroup.cpp
+        src/object/CollisionGroup.h
 )
 target_link_libraries(HernaDmitriev ppgso shaders)
 
