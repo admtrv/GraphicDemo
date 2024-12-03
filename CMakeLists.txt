@@ -163,9 +163,11 @@ add_executable(HernaDmitriev
         src/object/Billiard.cpp
         src/object/Dartboard.cpp
         src/object/Chandelier.cpp
+        src/object/Glass.cpp
 
         src/camera/Camera.cpp
         src/camera/DebugCamera.cpp
+
         src/object/BilliardBall.cpp
         src/object/BilliardBall.h
         src/object/BilliardWall.cpp

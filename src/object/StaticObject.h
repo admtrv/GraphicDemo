@@ -20,6 +20,8 @@ public:
     bool updateInternal(Scene& scene, float dt) override;   // update object
     void renderInternal(Scene& scene) override;             // render object
 
+    float transparency{1.0f};
+
 private:
     // shared resources between instances
     static std::unique_ptr<ppgso::Mesh> defaultMesh;

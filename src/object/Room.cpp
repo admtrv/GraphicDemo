@@ -1,3 +1,4 @@
+#include <unordered_map>
 #include "Room.h"
 
 Room::Room() {
@@ -62,12 +63,49 @@ void Room::generateArcade() {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> textureDist(0, arcadeTextures.size() - 1);
 
-    float startZ = - (ROOM_DEPTH / 2.0f) + ARCADE_WIDTH * 0.5f;
+    float startZ = -(ROOM_DEPTH / 2.0f) + ARCADE_WIDTH * 0.5f;
     float stepZ = ARCADE_WIDTH;
 
+    std::unordered_map<std::string, int> textureUsage;
+
+    for (const auto& texture : arcadeTextures) {
+        textureUsage[texture] = 0;
+    }
+
+    std::vector<std::string> arcadeSequence;
+
     for (int i = 0; i < ARCADE_NUM; i++) {
-        std::string randomTexture = arcadeTextures[textureDist(gen)];
-        auto arcadeMachine = std::make_unique<Arcade>(randomTexture);
+        std::string selectedTexture;
+
+        auto selectTexture = [&]() {
+            std::vector<std::string> candidates;
+            int minUsage = std::numeric_limits<int>::max();
+
+            // minimal usage
+            for (const auto& texture : arcadeTextures) {
+                if (textureUsage[texture] < minUsage) {
+                    candidates.clear();
+                    candidates.push_back(texture);
+                    minUsage = textureUsage[texture];
+                } else if (textureUsage[texture] == minUsage) {
+                    candidates.push_back(texture);
+                }
+            }
+
+            std::uniform_int_distribution<> candidateDist(0, candidates.size() - 1);
+            return candidates[candidateDist(gen)];
+        };
+
+        // not like neighbours
+        do {
+            selectedTexture = selectTexture();
+        } while (!arcadeSequence.empty() && selectedTexture == arcadeSequence.back());
+
+        arcadeSequence.push_back(selectedTexture);
+
+        textureUsage[selectedTexture]++;
+
+        auto arcadeMachine = std::make_unique<Arcade>(selectedTexture);
 
         arcadeMachine->position = glm::vec3(
                 -(ROOM_WIDTH / 2.0f) + (ROOM_WALL_THICKNESS / 2.0f) + (ARCADE_WIDTH / 2.0f),

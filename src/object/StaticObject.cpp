@@ -54,15 +54,13 @@ bool StaticObject::updateInternal(Scene& scene, float dt) {
 void StaticObject::renderInternal(Scene& scene) {
     shader->use();
 
-    // set light direction
     shader->setUniform("LightDirection", scene.light);
-
-    // set matrix
     shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
     shader->setUniform("ViewMatrix", scene.camera->viewMatrix);
     shader->setUniform("ModelMatrix", modelMatrix);
+    shader->setUniform("Transparency", transparency);
+    shader->setUniform("TextureOffset", glm::vec2(0.0f, 0.0f));
 
-    // bind texture
     glActiveTexture(GL_TEXTURE0);
     texture->bind();
     shader->setUniform("Texture", 0);
