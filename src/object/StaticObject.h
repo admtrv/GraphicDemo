@@ -17,8 +17,8 @@ class StaticObject : public Object {
 public:
     explicit StaticObject(const std::string& textureFile = "", const std::string& modelFile = "");
 
-    bool updateInternal(Scene& scene, float dt) override;   // update object
-    void renderInternal(Scene& scene) override;             // render object
+    bool updateInternal(float dt) override;   // update object
+    void renderInternal(ppgso::Shader *shader) override;             // render object
 
     float transparency{1.0f};
 

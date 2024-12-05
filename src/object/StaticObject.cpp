@@ -11,9 +11,6 @@ std::unique_ptr<ppgso::Texture> StaticObject::defaultTexture;
 
 StaticObject::StaticObject(const std::string& textureFile, const std::string& modelFile) {
     // initialize shared resources
-    if (!shader) {
-        shader = std::make_unique<ppgso::Shader>(diffuse_vert_glsl, diffuse_frag_glsl);
-    }
 
     if (!modelFile.empty()) {
         try {
@@ -46,24 +43,17 @@ StaticObject::StaticObject(const std::string& textureFile, const std::string& mo
     }
 }
 
-bool StaticObject::updateInternal(Scene& scene, float dt) {
+bool StaticObject::updateInternal(float dt) {
     generateModelMatrix();  // update transformation matrix
     return true;            // static object is always active
 }
 
-void StaticObject::renderInternal(Scene& scene) {
-    shader->use();
-
-    shader->setUniform("LightDirection", scene.light);
-    shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
-    shader->setUniform("ViewMatrix", scene.camera->viewMatrix);
+void StaticObject::renderInternal(ppgso::Shader *shader) {
     shader->setUniform("ModelMatrix", modelMatrix);
     shader->setUniform("Transparency", transparency);
     shader->setUniform("TextureOffset", glm::vec2(0.0f, 0.0f));
 
-    glActiveTexture(GL_TEXTURE0);
     texture->bind();
-    shader->setUniform("Texture", 0);
 
     mesh->render();
 }

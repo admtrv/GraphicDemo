@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <list>
+#include <ppgso/ppgso.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
@@ -28,13 +29,13 @@ public:
     void addChild(std::unique_ptr<Object> child);
 
     // update  object and its children
-    bool update(Scene& scene, float dt);
+    bool update(float dt);
 
     // render object and its children
-    void render(Scene& scene);
+    void render(ppgso::Shader *shader);
 
-    virtual bool updateInternal(Scene& scene, float dt) = 0;
-    virtual void renderInternal(Scene& scene) = 0;
+    virtual bool updateInternal(float dt) = 0;
+    virtual void renderInternal(ppgso::Shader *shader) = 0;
 
     // object properties
     glm::vec3 position{0.0f, 0.0f, 0.0f}; // position of the object

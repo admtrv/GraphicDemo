@@ -5,11 +5,11 @@ Glass::Glass() : StaticObject("screen.bmp", "cube.obj") {
     transparency = 0.3f;
 }
 
-void Glass::renderInternal(Scene& scene) {
+void Glass::renderInternal(ppgso::Shader *shader) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    StaticObject::renderInternal(scene);
+    StaticObject::renderInternal(shader);
 
     glDisable(GL_BLEND);
 }

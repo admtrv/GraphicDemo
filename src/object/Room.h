@@ -1,6 +1,7 @@
 #pragma once
 
 #include "src/object/StaticObject.h"
+#include "src/object/VirtualObject.h"
 #include "src/object/Arcade.h"
 #include "src/object/Billiard.h"
 #include "src/object/Dartboard.h"
@@ -18,7 +19,7 @@
 #define ROOM_HEIGHT             10.0f
 #define ROOM_WALL_THICKNESS     0.2f
 
-class Room : public StaticObject {
+class Room : public VirtualObject {
 public:
     Room();
 

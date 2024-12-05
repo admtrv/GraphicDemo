@@ -10,9 +10,9 @@ void Object::addChild(std::unique_ptr<Object> child) {
     children.push_back(std::move(child));
 }
 
-bool Object::update(Scene& scene, float dt) {
+bool Object::update(float dt) {
     // update current object
-    bool isAlive = updateInternal(scene, dt);
+    bool isAlive = updateInternal(dt);
 
     // combine transformation matrix with the parent's matrix
     if (parent) {
@@ -21,7 +21,7 @@ bool Object::update(Scene& scene, float dt) {
 
     // update children and remove not alive
     for (auto it = children.begin(); it != children.end();) {
-        if (!(*it)->update(scene, dt)) {
+        if (!(*it)->update(dt)) {
             it = children.erase(it);    // remove dead child
         } else {
             ++it;                               // move to the next
@@ -31,10 +31,10 @@ bool Object::update(Scene& scene, float dt) {
     return isAlive;
 }
 
-void Object::render(Scene& scene) {
-    renderInternal(scene);                                  // render the current object
+void Object::render(ppgso::Shader *shader) {
+    renderInternal(shader);                                  // render the current object
     for (const auto& child : children) {
-        child->render(scene);                               // render all children
+        child->render(shader);                               // render all children
     }
 }
 

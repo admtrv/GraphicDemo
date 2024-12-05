@@ -6,5 +6,5 @@ class Glass : public StaticObject {
 public:
     Glass();
 
-    void renderInternal(Scene& scene) override;
+    void renderInternal(ppgso::Shader *shader) override;
 };

@@ -131,14 +131,20 @@ add_executable(HernaKocalka
 
         src/object/Object.cpp
         src/object/StaticObject.cpp
+        src/object/VirtualObject.cpp
         src/object/Room.cpp
         src/object/Arcade.cpp
         src/object/Billiard.cpp
         src/object/Dartboard.cpp
         src/object/Chandelier.cpp
+        src/object/Glass.cpp
 
         src/camera/Camera.cpp
+        src/camera/OrthoCamera.cpp
+        src/camera/PersCamera.cpp
         src/camera/DebugCamera.cpp
+        src/camera/ShadowMap.cpp
+
         src/object/BilliardBall.cpp
         src/object/BilliardBall.h
         src/object/BilliardWall.cpp

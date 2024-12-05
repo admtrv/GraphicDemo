@@ -17,7 +17,6 @@ public:
     glm::mat4 viewMatrix{1.0f};
     glm::mat4 projectionMatrix{1.0f};
 
-    explicit Camera(float fov = 45.0f, float ratio = 1.0f, float near = 0.1f, float far = 100.0f);
 
     void update();
 

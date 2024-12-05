@@ -16,5 +16,4 @@ extern std::vector<std::string> arcadeTextures;
 class Arcade : public StaticObject {
 public:
     explicit Arcade(const std::string& textureFile, const std::string& modelFile = "arcade.obj");
-    void render(Scene& scene);
 };

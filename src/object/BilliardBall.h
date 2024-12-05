@@ -22,12 +22,11 @@ public:
 
     CollisionGroup* collisionGroup;
 
-    bool updateInternal(Scene& scene, float dt) override;   // update object
-    void renderInternal(Scene& scene) override;
+    bool updateInternal(float dt) override;   // update object
+    void renderInternal(ppgso::Shader *shader) override;
 private:
     // shared resources between instances
     static std::unique_ptr<ppgso::Mesh> defaultMesh;
-    static std::unique_ptr<ppgso::Shader> shader;
     static std::unique_ptr<ppgso::Texture> defaultTexture;
 
     std::unique_ptr<ppgso::Mesh> mesh;       // uniq mesh

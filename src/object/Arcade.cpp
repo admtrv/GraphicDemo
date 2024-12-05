@@ -21,11 +21,3 @@ Arcade::Arcade(const std::string& textureFile, const std::string& modelFile)
     screen->rotation = glm::vec3(glm::radians(-15.0f), 0.0f, 0.0f);
     addChild(std::move(screen));
 }
-
-void Arcade::render(Scene& scene) {
-    StaticObject::renderInternal(scene);
-
-    for (auto& child : children) {
-        child->render(scene);
-    }
-}

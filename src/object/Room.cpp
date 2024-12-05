@@ -28,11 +28,26 @@ Room::Room() {
     addChild(std::move(leftWall));
 
     // right wall
-    auto rightWall = std::make_unique<StaticObject>("wall.bmp");
-    rightWall->position = glm::vec3(ROOM_WIDTH / 2.0f, ROOM_HEIGHT / 2.0f, 0.0f);
-    rightWall->scale = glm::vec3(ROOM_DEPTH, ROOM_HEIGHT, ROOM_WALL_THICKNESS);
-    rightWall->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
-    addChild(std::move(rightWall));
+    auto rightWallBottom = std::make_unique<StaticObject>("wall.bmp");
+    rightWallBottom->position = glm::vec3(ROOM_WIDTH / 2.0f, ROOM_HEIGHT / 6.0f, 0.0f);
+    rightWallBottom->scale = glm::vec3(ROOM_DEPTH, ROOM_HEIGHT/3.0f, ROOM_WALL_THICKNESS);
+    rightWallBottom->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
+    addChild(std::move(rightWallBottom));
+
+    auto rightWallTop = std::make_unique<StaticObject>("wall.bmp");
+    rightWallTop->position = glm::vec3(ROOM_WIDTH / 2.0f,  ROOM_HEIGHT * 5.0f / 6.0f, 0.0f);
+    rightWallTop->scale = glm::vec3(ROOM_DEPTH, ROOM_HEIGHT/3.0f, ROOM_WALL_THICKNESS);
+    rightWallTop->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
+    addChild(std::move(rightWallTop));
+
+    std::unique_ptr<StaticObject> rightWallSegment;
+    for (int i = 0; i < 4; i++) {
+        rightWallSegment = std::make_unique<StaticObject>("wall.bmp");
+        rightWallSegment->position = glm::vec3(ROOM_WIDTH / 2.0f,  ROOM_HEIGHT / 2.0f, ROOM_DEPTH / 2.0f - ROOM_DEPTH / 16.0f - i * ROOM_DEPTH / 4.0f);
+        rightWallSegment->scale = glm::vec3(ROOM_DEPTH/8, ROOM_HEIGHT/3.0f, ROOM_WALL_THICKNESS);
+        rightWallSegment->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
+        addChild(std::move(rightWallSegment));
+    }
 }
 
 void Room::addArcades() {

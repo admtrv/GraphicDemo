@@ -3,14 +3,10 @@
 #include "CollisionGroup.h"
 
 std::unique_ptr<ppgso::Mesh> BilliardBall::defaultMesh;
-std::unique_ptr<ppgso::Shader> BilliardBall::shader;
 std::unique_ptr<ppgso::Texture> BilliardBall::defaultTexture;
 
 BilliardBall::BilliardBall(const std::string& textureFile, const std::string& modelFile)
         : Object() {// initialize shared resources
-    if (!shader) {
-        shader = std::make_unique<ppgso::Shader>(diffuse_vert_glsl, diffuse_frag_glsl);
-    }
 
     if (!modelFile.empty()) {
         try {
@@ -61,7 +57,7 @@ bool BilliardBall::CheckCollision(BilliardBall* object) {
     return glm::length(object->position - position) < object->radius + radius;
 }
 
-bool BilliardBall::updateInternal(Scene &scene, float dt) {
+bool BilliardBall::updateInternal(float dt) {
     moving = true;
     if(glm::length(speed) < 0.01){
         speed = glm::vec3(0,0,0);
@@ -131,21 +127,11 @@ bool BilliardBall::updateInternal(Scene &scene, float dt) {
     return true;
 }
 
-void BilliardBall::renderInternal(Scene& scene) {
-    shader->use();
-
-    // set light direction
-    shader->setUniform("LightDirection", scene.light);
-
-    // set matrix
-    shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
-    shader->setUniform("ViewMatrix", scene.camera->viewMatrix);
+void BilliardBall::renderInternal(ppgso::Shader *shader) {
     shader->setUniform("ModelMatrix", modelMatrix);
 
     // bind texture
-    glActiveTexture(GL_TEXTURE0);
     texture->bind();
-    shader->setUniform("Texture", 0);
 
     mesh->render();
 }
