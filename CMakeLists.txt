@@ -151,6 +151,8 @@ add_executable(HernaKocalka
         src/object/BilliardWall.h
         src/object/CollisionGroup.cpp
         src/object/CollisionGroup.h
+        src/object/ThrowingDart.cpp
+        src/object/ThrowingDart.h
         src/object/ObjectResources.cpp
         src/object/ObjectResources.h
 )

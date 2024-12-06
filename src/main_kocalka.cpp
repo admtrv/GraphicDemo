@@ -13,6 +13,7 @@
 #include "src/camera/OrthoCamera.h"
 #include "camera/DebugCamera.h"
 #include "object/Room.h"
+#include "object/Dartboard.h"
 
 #define WINDOW_WIDTH    1024
 #define WINDOW_HEIGHT   512
@@ -21,6 +22,7 @@ class SceneWindow : public ppgso::Window {
 private:
     Scene scene;
     std::unique_ptr<DebugCamera> debugCamera;
+    Dartboard* activeDartboard;
 
     void initScene() {
         if (!scene.objects.empty()) return;
@@ -28,8 +30,8 @@ private:
         scene.windowHeight = WINDOW_HEIGHT;
         // create camera
         auto camera = std::make_unique<PersCamera>(60.0f, (float)width / (float)height, 0.1f, 100.0f);
-        camera->position = glm::vec3(0.0f, 5.0f, 20.0f);
-        camera->direction = glm::vec3(0.0f, 0.0f, -1.0f);
+        camera->position = glm::vec3(1.30768, 5, -5.90536);
+        camera->direction = glm::vec3(-0.803496, 0.0756772, -0.590481);
         debugCamera = std::make_unique<DebugCamera>(camera.get());
         scene.camera = std::move(camera);
 
@@ -54,7 +56,7 @@ private:
         roomPtr->addChandeliers();
 
         // create dartboards
-        roomPtr->addDartboards();
+        activeDartboard = roomPtr->addDartboards();
     }
 
 
@@ -72,6 +74,9 @@ public:
 
     void onKey(int key, int scanCode, int action, int mods) override {
         debugCamera->keyboard[key] = action;
+        if(key == GLFW_KEY_X && action){
+            activeDartboard->throwDart();
+        }
     }
 
     void onIdle() override {

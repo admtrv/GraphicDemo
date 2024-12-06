@@ -60,18 +60,21 @@ void Room::addBilliards() {
     generateBilliards();
 }
 
-void Room::addDartboards() {
+Dartboard* Room::addDartboards() {
     float offsetX = ROOM_WIDTH / 5.0f;
     float dartboardY = ROOM_HEIGHT / 2.0f;
     float dartboardZ = -(ROOM_DEPTH / 2.0f) + 0.1f;
 
     auto leftDartboard = std::make_unique<Dartboard>();
     leftDartboard->position = glm::vec3(-offsetX, dartboardY, dartboardZ);
+    Dartboard* returnValue = leftDartboard.get();
     addChild(std::move(leftDartboard));
 
     auto rightDartboard = std::make_unique<Dartboard>();
     rightDartboard->position = glm::vec3(offsetX, dartboardY, dartboardZ);
     addChild(std::move(rightDartboard));
+
+    return returnValue;
 }
 
 // random arcade generation
@@ -155,7 +158,7 @@ void Room::generateBilliards() {
             wall->scale = glm::vec3(10, 240, 5);
             wall->collisionGroup = collisionGroup.get();
             wall->x = 5;
-            wall->y = 120;
+            wall->y = 150;
             wall->z = 2.5f;
             collisionGroup->AddCollider(wall.get());
             billiard->addChild(std::move(wall));
@@ -165,7 +168,7 @@ void Room::generateBilliards() {
             wall->scale = glm::vec3(10, 240, 5);
             wall->collisionGroup = collisionGroup.get();
             wall->x = 5;
-            wall->y = 120;
+            wall->y = 150;
             wall->z = 2.5f;
             collisionGroup->AddCollider(wall.get());
             billiard->addChild(std::move(wall));
@@ -174,7 +177,7 @@ void Room::generateBilliards() {
             wall->position = glm::vec3(0, 120, 75);
             wall->scale = glm::vec3(120, 10, 5);
             wall->collisionGroup = collisionGroup.get();
-            wall->x = 60;
+            wall->x = 80;
             wall->y = 5;
             wall->z = 2.5f;
             collisionGroup->AddCollider(wall.get());
@@ -183,7 +186,7 @@ void Room::generateBilliards() {
             wall = std::make_unique<BilliardWall>();
             wall->position = glm::vec3(0, -120, 75);
             wall->scale = glm::vec3(120, 10, 5);
-            wall->x = 60;
+            wall->x = 80;
             wall->y = 5;
             wall->z = 2.5f;
             wall->collisionGroup = collisionGroup.get();

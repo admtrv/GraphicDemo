@@ -9,6 +9,7 @@
 #include "src/object/CollisionGroup.h"
 #include "src/object/BilliardBall.h"
 #include "src/object/BilliardWall.h"
+#include "src/object/ThrowingDart.h"
 
 #include <vector>
 #include <memory>
@@ -25,7 +26,7 @@ public:
 
     void addArcades();
     void addBilliards();
-    void addDartboards();
+    Dartboard* addDartboards();
     void addChandeliers();
 
 private:

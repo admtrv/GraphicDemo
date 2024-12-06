@@ -11,4 +11,6 @@
 class Dartboard : public StaticObject {
 public:
     explicit Dartboard(const std::string& textureFile = "dartboard.bmp", const std::string& modelFile = "dartboard.obj");
+
+    void throwDart();
 };
