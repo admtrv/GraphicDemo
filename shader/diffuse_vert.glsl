@@ -8,6 +8,8 @@ uniform mat4 ProjectionMatrix;
 uniform mat4 ViewMatrix;
 uniform mat4 ModelMatrix;
 uniform mat4 LightSpaceMatrix;
+uniform vec2 TextureCoordMod;
+uniform vec2 TextureOffset;
 
 out vec2 texCoord;
 out vec3 normal;
@@ -15,7 +17,7 @@ out vec3 fragPos;
 out vec4 fragPosLightSpace;
 
 void main() {
-  texCoord = TexCoord;
+  texCoord = TexCoord*TextureCoordMod+TextureOffset;
   normal = normalize(mat3(transpose(inverse(ModelMatrix))) * Normal);
   fragPos = vec3(ModelMatrix * vec4(Position, 1.0));
   fragPosLightSpace = LightSpaceMatrix  * ModelMatrix * vec4(Position, 1.0);

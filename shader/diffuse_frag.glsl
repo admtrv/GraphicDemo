@@ -5,7 +5,6 @@ uniform sampler2D ShadowMap;
 
 uniform vec3 LightDirection;
 uniform float Transparency;
-uniform vec2 TextureOffset;
 
 in vec2 texCoord;
 in vec3 normal;
@@ -52,7 +51,7 @@ void main() {
     float shadow = ShadowCalculation(fragPosLightSpace);
     float lighting = min(ambient + (1.0 - shadow) * diffuse, 1.0);
 
-    vec4 texColor = texture(Texture, vec2(texCoord.x, 1.0 - texCoord.y) + TextureOffset);
+    vec4 texColor = texture(Texture, vec2(texCoord.x, 1.0 - texCoord.y));
 
     FragmentColor = texColor * lighting;
 

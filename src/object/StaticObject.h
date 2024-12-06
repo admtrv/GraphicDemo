@@ -17,17 +17,15 @@ class StaticObject : public Object {
 public:
     explicit StaticObject(const std::string& textureFile = "", const std::string& modelFile = "");
 
+    void setTextureSize(glm::vec2 textureSize);
+    void setTextureOffset(glm::vec2 textureOffset);
+
     bool updateInternal(float dt) override;   // update object
     void renderInternal(ppgso::Shader *shader) override;             // render object
 
     float transparency{1.0f};
 
 private:
-    // shared resources between instances
-    static std::unique_ptr<ppgso::Mesh> defaultMesh;
-    static std::unique_ptr<ppgso::Shader> shader;
-    static std::unique_ptr<ppgso::Texture> defaultTexture;
-
-    std::unique_ptr<ppgso::Mesh> mesh;       // uniq mesh
-    std::unique_ptr<ppgso::Texture> texture; // uniq texture
+    std::string meshCode;
+    std::string textureCode;
 };

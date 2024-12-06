@@ -1,6 +1,8 @@
 #include <unordered_map>
 #include "Room.h"
 
+const unsigned int BALLTEXTURE[] {15,14,6,13,12,7,5,4,11,3,10,9,2,1,8,0};
+
 Room::Room() {
     // floor
     auto floor = std::make_unique<StaticObject>("floor.bmp");
@@ -188,18 +190,23 @@ void Room::generateBilliards() {
             collisionGroup->AddCollider(wall.get());
             billiard->addChild(std::move(wall));
         }
-
+        int ballId = 0;
         auto ball = std::make_unique<BilliardBall>();
         ball->collisionGroup = collisionGroup.get();
         ball->position = glm::vec3{0,69,74};
         ball->speed = glm::vec3(0,-100,0);
         ball->radius = ball->scale.x/2;
+        ball->setTextureSize(glm::vec2(64,64));
+        ball->setTextureOffset(glm::vec2(0,64*BALLTEXTURE[ballId]));
         collisionGroup->AddCollider(ball.get());
         billiard->addChild(std::move(ball));
 
         for (int i = 0; i < 5; i++){
             for (int j = 0; j <= i; j++){
+                ballId++;
                 ball = std::make_unique<BilliardBall>();
+                ball->setTextureSize(glm::vec2(64,64));
+                ball->setTextureOffset(glm::vec2(0,64*BALLTEXTURE[ballId]));
                 ball->collisionGroup = collisionGroup.get();
                 ball->position = glm::vec3{0-((6.5/2)*i)+6.5*j,-55 -(6.5*i),74};
                 ball->speed = glm::vec3(0,0,0);

@@ -151,6 +151,8 @@ add_executable(HernaKocalka
         src/object/BilliardWall.h
         src/object/CollisionGroup.cpp
         src/object/CollisionGroup.h
+        src/object/ObjectResources.cpp
+        src/object/ObjectResources.h
 )
 target_link_libraries(HernaKocalka ppgso shaders)
 install(TARGETS HernaKocalka DESTINATION .)

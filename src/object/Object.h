@@ -43,7 +43,10 @@ public:
     glm::vec3 scale{1.0f, 1.0f, 1.0f};    // scaling factors
     glm::mat4 modelMatrix{1.0f};                // transformation matrix
 
+    glm::vec2 textureCoordMod{1.0f, 1.0f};
+    glm::vec2 textureOffset{0.0f, 0.0f};
+
 protected:
     // generate model matrix
-    void generateModelMatrix();
+    void virtual generateModelMatrix();
 };

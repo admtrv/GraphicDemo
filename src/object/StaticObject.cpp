@@ -3,47 +3,52 @@
  */
 
 #include "StaticObject.h"
+#include "ObjectResources.h"
 
-// shared resources
-std::unique_ptr<ppgso::Mesh> StaticObject::defaultMesh;
-std::unique_ptr<ppgso::Shader> StaticObject::shader;
-std::unique_ptr<ppgso::Texture> StaticObject::defaultTexture;
 
 StaticObject::StaticObject(const std::string& textureFile, const std::string& modelFile) {
     // initialize shared resources
-
     if (!modelFile.empty()) {
-        try {
-            mesh = std::make_unique<ppgso::Mesh>(modelFile);
-            std::cout << "Loaded model: " << modelFile << std::endl;
-        } catch (const std::runtime_error& e) {
-            std::cerr << "Failed to load model: " << modelFile << ". Error: " << e.what() << std::endl;
+        if(objectResources.addMesh(modelFile)){
+            meshCode = modelFile;
+        } else {
+            if(objectResources.addMesh("cube.obj"))
+                meshCode = "cube.obj";
+            std::cout << "Load default mesh\n";
         }
-    } else if (!defaultMesh) {
-        defaultMesh = std::make_unique<ppgso::Mesh>("cube.obj");
-        mesh = std::make_unique<ppgso::Mesh>(*defaultMesh);
     } else {
-        mesh = std::make_unique<ppgso::Mesh>(*defaultMesh);
+        if(objectResources.addMesh("cube.obj"))
+            meshCode = "cube.obj";
+        std::cout << "Load default mesh\n";
     }
-
 
     // load texture only if textureFile is not empty
     if (!textureFile.empty()) {
-        try {
-            texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP(textureFile));
-            std::cout << "Loaded texture: " << textureFile << std::endl;
-        } catch (const std::runtime_error& e) {
-            std::cerr << "Failed to load texture: " << textureFile << ". Error: " << e.what() << std::endl;
+        if(objectResources.addTexture(textureFile)){
+            textureCode = textureFile;
+        } else {
+            if(objectResources.addTexture("lena.bmp"))
+                textureCode = "lena.bmp";
+            std::cout << "Load default mesh\n";
         }
-    } else if (!defaultTexture) {
-        defaultTexture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("lena.bmp"));
-        texture = std::make_unique<ppgso::Texture>(*defaultTexture);
     } else {
-        texture = std::make_unique<ppgso::Texture>(*defaultTexture);
+        if(objectResources.addTexture("lena.bmp"))
+            textureCode = "lena.bmp";
+        std::cout << "Load default mesh\n";
     }
 }
 
+void StaticObject::setTextureSize(glm::vec2 textureSize) {
+    textureCoordMod.x = textureSize.x / (float)objectResources.getTexture(textureCode)->image.width;
+    textureCoordMod.y = textureSize.y / (float)objectResources.getTexture(textureCode)->image.height;
+}
+void StaticObject::setTextureOffset(glm::vec2 textureOffset) {
+    this->textureOffset.x = textureOffset.x / (float)objectResources.getTexture(textureCode)->image.width;
+    this->textureOffset.y = textureOffset.y / (float)objectResources.getTexture(textureCode)->image.height;
+}
+
 bool StaticObject::updateInternal(float dt) {
+    //rotationMatrix = glm::rotate(glm::mat4(1), glm::radians(1.0f), glm::vec3(1,1,0)) * rotationMatrix;
     generateModelMatrix();  // update transformation matrix
     return true;            // static object is always active
 }
@@ -51,9 +56,10 @@ bool StaticObject::updateInternal(float dt) {
 void StaticObject::renderInternal(ppgso::Shader *shader) {
     shader->setUniform("ModelMatrix", modelMatrix);
     shader->setUniform("Transparency", transparency);
-    shader->setUniform("TextureOffset", glm::vec2(0.0f, 0.0f));
+    shader->setUniform("TextureCoordMod", textureCoordMod);
+    shader->setUniform("TextureOffset", textureOffset);
 
-    texture->bind();
+    objectResources.getTexture(textureCode)->bind();
 
-    mesh->render();
+    objectResources.getMesh(meshCode)->render();
 }

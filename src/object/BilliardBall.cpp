@@ -1,44 +1,53 @@
 #include "BilliardBall.h"
 #include "BilliardWall.h"
 #include "CollisionGroup.h"
+#include "ObjectResources.h"
 
-std::unique_ptr<ppgso::Mesh> BilliardBall::defaultMesh;
-std::unique_ptr<ppgso::Texture> BilliardBall::defaultTexture;
 
 BilliardBall::BilliardBall(const std::string& textureFile, const std::string& modelFile)
-        : Object() {// initialize shared resources
-
+        : Object() {
+    // initialize shared resources
     if (!modelFile.empty()) {
-        try {
-            mesh = std::make_unique<ppgso::Mesh>(modelFile);
-            std::cout << "Loaded model: " << modelFile << std::endl;
-        } catch (const std::runtime_error& e) {
-            std::cerr << "Failed to load model: " << modelFile << ". Error: " << e.what() << std::endl;
+        if(objectResources.addMesh(modelFile)){
+            meshCode = modelFile;
+        } else {
+            if(objectResources.addMesh("cube.obj"))
+                meshCode = "cube.obj";
+            std::cout << "Load default mesh\n";
         }
-    } else if (!defaultMesh) {
-        defaultMesh = std::make_unique<ppgso::Mesh>("cube.obj");
-        mesh = std::make_unique<ppgso::Mesh>(*defaultMesh);
     } else {
-        mesh = std::make_unique<ppgso::Mesh>(*defaultMesh);
+        if(objectResources.addMesh("cube.obj"))
+            meshCode = "cube.obj";
+        std::cout << "Load default mesh\n";
     }
-
 
     // load texture only if textureFile is not empty
     if (!textureFile.empty()) {
-        try {
-            texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP(textureFile));
-            std::cout << "Loaded texture: " << textureFile << std::endl;
-        } catch (const std::runtime_error& e) {
-            std::cerr << "Failed to load texture: " << textureFile << ". Error: " << e.what() << std::endl;
+        if(objectResources.addTexture(textureFile)){
+            textureCode = textureFile;
+        } else {
+            if(objectResources.addTexture("lena.bmp"))
+                textureCode = "lena.bmp";
+            std::cout << "Load default mesh\n";
         }
-    } else if (!defaultTexture) {
-        defaultTexture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("lena.bmp"));
-        texture = std::make_unique<ppgso::Texture>(*defaultTexture);
     } else {
-        texture = std::make_unique<ppgso::Texture>(*defaultTexture);
+        if(objectResources.addTexture("lena.bmp"))
+            textureCode = "lena.bmp";
+        std::cout << "Load default mesh\n";
     }
+
     scale = glm::vec3(BILLIARD_BALL_FACTOR, BILLIARD_BALL_FACTOR, BILLIARD_BALL_FACTOR);
     rotation = glm::vec3(glm::radians(-90.0f), 0.0f, glm::radians(-90.0f));
+}
+
+
+void BilliardBall::setTextureSize(glm::vec2 textureSize) {
+    textureCoordMod.x = textureSize.x / (float)objectResources.getTexture(textureCode)->image.width;
+    textureCoordMod.y = textureSize.y / (float)objectResources.getTexture(textureCode)->image.height;
+}
+void BilliardBall::setTextureOffset(glm::vec2 textureOffset) {
+    this->textureOffset.x = textureOffset.x / (float)objectResources.getTexture(textureCode)->image.width;
+    this->textureOffset.y = textureOffset.y / (float)objectResources.getTexture(textureCode)->image.height;
 }
 
 glm::vec3 BilliardBall::GetClosestPoint(BilliardWall* object) {
@@ -129,9 +138,11 @@ bool BilliardBall::updateInternal(float dt) {
 
 void BilliardBall::renderInternal(ppgso::Shader *shader) {
     shader->setUniform("ModelMatrix", modelMatrix);
+    shader->setUniform("TextureCoordMod", textureCoordMod);
+    shader->setUniform("TextureOffset", textureOffset);
 
     // bind texture
-    texture->bind();
+    objectResources.getTexture(textureCode)->bind();
 
-    mesh->render();
+    objectResources.getMesh(meshCode)->render();
 }

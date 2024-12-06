@@ -11,7 +11,9 @@
 
 class BilliardBall : public Object {
 public:
-    explicit BilliardBall(const std::string& textureFile = "asteroid.bmp", const std::string& modelFile = "sphere.obj");
+    explicit BilliardBall(const std::string& textureFile = "billiardBalls.bmp", const std::string& modelFile = "sphere.obj");
+    void setTextureSize(glm::vec2 textureSize);
+    void setTextureOffset(glm::vec2 textureOffset);
     glm::vec3 GetClosestPoint(BilliardWall* object);
     bool CheckCollision(BilliardBall* object);
     bool CheckCollision(BilliardWall* object);
@@ -25,9 +27,8 @@ public:
     bool updateInternal(float dt) override;   // update object
     void renderInternal(ppgso::Shader *shader) override;
 private:
-    // shared resources between instances
-    static std::unique_ptr<ppgso::Mesh> defaultMesh;
-    static std::unique_ptr<ppgso::Texture> defaultTexture;
+    std::string meshCode;
+    std::string textureCode;
 
     std::unique_ptr<ppgso::Mesh> mesh;       // uniq mesh
     std::unique_ptr<ppgso::Texture> texture; // uniq texture
