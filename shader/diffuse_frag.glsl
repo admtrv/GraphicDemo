@@ -4,12 +4,18 @@ uniform sampler2D Texture;
 uniform sampler2D ShadowMap;
 
 uniform vec3 LightDirection;
+
 uniform vec3 AdditionalLightPositions[8];
-uniform vec3 AdditionalLightDirections[8];
 uniform vec3 AdditionalLightColors[8];
 uniform float AdditionalLightIntensities[8];
-uniform int AdditionalLightTypes[8];
-uniform int LightCount;
+uniform bool AdditionalLightTypes[8];
+uniform float LightCount;
+
+uniform vec3 AdditionalDirectionalLightPositions[8];
+uniform vec3 AdditionalDirectionalLightDirections[8];
+uniform vec3 AdditionalDirectionalLightColors[8];
+uniform float AdditionalDirectionalLightIntensities[8];
+uniform float AdditionalDirectionalLightCount;
 
 uniform float Transparency;
 
@@ -51,16 +57,16 @@ void main() {
     vec3 additionalLighting = vec3(0.0);
     for (int i = 0; i < LightCount; ++i) {
         vec3 lightDir;
-        if (AdditionalLightTypes[i] == 0) {
-            lightDir = normalize(AdditionalLightPositions[i] - fragPos);
-        } else {
-            lightDir = normalize(-AdditionalLightDirections[i]);
-        }
-
+        lightDir = normalize(AdditionalLightPositions[0] - fragPos);
         float lightDiffuse = max(dot(norm, lightDir), 0.0);
-        additionalLighting += AdditionalLightColors[i] * lightDiffuse * AdditionalLightIntensities[i];
+        additionalLighting += lightDiffuse * AdditionalLightIntensities[0] * AdditionalLightColors[0];
     }
-
+    for (int i = 0; i < AdditionalDirectionalLightCount; ++i) {
+        vec3 lightDir;
+        lightDir = normalize(-AdditionalDirectionalLightDirections[0]);
+        float lightDiffuse = max(dot(norm, lightDir), 0.0);
+        additionalLighting += lightDiffuse * AdditionalDirectionalLightIntensities[0] * AdditionalDirectionalLightColors[0];
+    }
     vec3 finalLighting = mainLighting + additionalLighting;
 
     const float gamma = 2.2;
