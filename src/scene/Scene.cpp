@@ -7,6 +7,10 @@
 #include <shaders/passthrough_frag_glsl.h>
 #include <shaders/blur_frag_glsl.h>
 
+#include <shaders/threshold_frag_glsl.h>
+#include <shaders/gauss_frag_glsl.h>
+#include <shaders/combine_frag_glsl.h>
+
 Scene::Scene(){
     shadowMap = std::make_unique<ShadowMap>();
     shader = std::make_unique<ppgso::Shader>(diffuse_vert_glsl, diffuse_frag_glsl);
@@ -129,31 +133,74 @@ void Scene::render() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0); // switch to the default framebuffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    ppgso::Shader* chosenShader = nullptr;
-    switch(currentFilter) {
-        case PostProcessMode::NONE:
-            chosenShader = passthroughShader.get();
-            break;
-        case PostProcessMode::GRAYSCALE:
-            chosenShader = grayscaleShader.get();
-            break;
-        case PostProcessMode::BLUR:
-            chosenShader = blurShader.get();
-            break;
-        //case PostProcessMode::BLOOM:
-            //chosenShader = bloomShader.get();
-            break;
-        default:
-            return;
+    if (currentFilter == PostProcessMode::BLOOM) {
+        // 1. Threshold pass
+        glBindFramebuffer(GL_FRAMEBUFFER, brightFBO);
+        glClear(GL_COLOR_BUFFER_BIT);
+        thresholdShader->use();
+        thresholdShader->setUniform("sceneTexture", 0);
+        thresholdShader->setUniform("threshold", thresholdValue);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, colorTexture);
+        glBindVertexArray(quadVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        // 2. blur pass
+        bool horizontal = true, first_iteration = true;
+        gaussShader->use();
+        for (int i = 0; i < blurIterations; i++) {
+            glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+            gaussShader->setUniform("horizontal", horizontal);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, first_iteration ? brightTexture : pingpongColorbuffers[!horizontal]);
+            glBindVertexArray(quadVAO);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            horizontal = !horizontal;
+            if (first_iteration)
+                first_iteration = false;
+        }
+
+        // 3. Combine pass
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        combineShader->use();
+        combineShader->setUniform("sceneTexture", 0);
+        combineShader->setUniform("bloomTexture", 1);
+        combineShader->setUniform("bloomIntensity", bloomIntensity);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, colorTexture);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[!horizontal]);
+        glBindVertexArray(quadVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    } else {
+        // usual post-processing
+        ppgso::Shader* chosenShader = nullptr;
+        switch(currentFilter) {
+            case PostProcessMode::NONE:
+                chosenShader = passthroughShader.get();
+                break;
+            case PostProcessMode::GRAYSCALE:
+                chosenShader = grayscaleShader.get();
+                break;
+            case PostProcessMode::BLUR:
+                chosenShader = blurShader.get();
+                break;
+            default:
+                return;
+        }
+
+        chosenShader->use();
+        chosenShader->setUniform("screenTexture", 0);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, colorTexture);
+        glBindVertexArray(quadVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
     }
-
-    chosenShader->use();
-    chosenShader->setUniform("screenTexture", 0);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, colorTexture);
-    glBindVertexArray(quadVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 
@@ -212,3 +259,39 @@ void Scene::loadPostProcessShaders() {
     //bloomShader       = std::make_unique<ppgso::Shader>(postprocess_vert_glsl, bloom_frag_glsl);
 }
 
+void Scene::setupBloom()
+{
+    // FBO for bright pixels
+    glGenFramebuffers(1, &brightFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, brightFBO);
+
+    glGenTextures(1, &brightTexture);
+    glBindTexture(GL_TEXTURE_2D, brightTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, windowWidth, windowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brightTexture, 0);
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cerr << "Bright FBO not complete!" << std::endl;
+
+    // ping-pong framebuffers for blur
+    glGenFramebuffers(2, pingpongFBO);
+    glGenTextures(2, pingpongColorbuffers);
+    for (int i = 0; i < 2; i++) {
+        glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
+        glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, windowWidth, windowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorbuffers[i], 0);
+        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cerr << "Pingpong FBO " << i << " not complete!" << std::endl;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Scene::loadBloomShaders() {
+    thresholdShader = std::make_unique<ppgso::Shader>(postprocess_vert_glsl, threshold_frag_glsl);
+    gaussShader = std::make_unique<ppgso::Shader>(postprocess_vert_glsl, gauss_frag_glsl);
+    combineShader = std::make_unique<ppgso::Shader>(postprocess_vert_glsl, combine_frag_glsl);
+}

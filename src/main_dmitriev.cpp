@@ -72,14 +72,20 @@ public:
         initScene();
         scene.setupPostProcessing();
         scene.loadPostProcessShaders();
+
+        scene.setupBloom();
+        scene.loadBloomShaders();
     }
 
     void onKey(int key, int scanCode, int action, int mods) override {
         debugCamera->keyboard[key] = action;
+
+        // key X: throw dart
         if(key == GLFW_KEY_X && action){
             activeDartboard->throwDart();
         }
 
+        // key M switch: none -> grayscale -> blur -> bloom -> none -> ...
         if (key == GLFW_KEY_M && action == GLFW_PRESS) {
             switch(scene.currentFilter) {
                 case PostProcessMode::NONE:
@@ -89,11 +95,11 @@ public:
                     scene.currentFilter = PostProcessMode::BLUR;
                     break;
                 case PostProcessMode::BLUR:
+                    scene.currentFilter = PostProcessMode::BLOOM;
+                    break;
+                case PostProcessMode::BLOOM:
                     scene.currentFilter = PostProcessMode::NONE;
                     break;
-                //case PostProcessMode::BLOOM:
-                    //scene.currentFilter = PostProcessMode::NONE;
-                    //break;
                 default:
                     return;
             }
@@ -108,7 +114,6 @@ public:
         float dt = (float) glfwGetTime() - time;
 
         time = (float) glfwGetTime();
-
 
         // update and render all objects
         debugCamera->update(dt);

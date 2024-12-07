@@ -19,9 +19,8 @@ enum class PostProcessMode {
     NONE,
     GRAYSCALE,
     BLUR,
-    // BLOOM
+    BLOOM
 };
-
 
 // scene aggregates all scene-related data, including objects and camera
 class Scene {
@@ -42,7 +41,9 @@ public:
     glm::vec3 light{0.5f, 1.0f, 1.0f};
 
     void setupPostProcessing();
+    void setupBloom();
     void loadPostProcessShaders();
+    void loadBloomShaders();
     PostProcessMode currentFilter = PostProcessMode::NONE;
 
 private:
@@ -54,4 +55,18 @@ private:
     std::unique_ptr<ppgso::Shader> grayscaleShader;
     std::unique_ptr<ppgso::Shader> passthroughShader;
     std::unique_ptr<ppgso::Shader> blurShader;
+
+    unsigned int brightFBO, brightTexture;
+    unsigned int pingpongFBO[2], pingpongColorbuffers[2];
+
+    std::unique_ptr<ppgso::Shader> thresholdShader;
+    std::unique_ptr<ppgso::Shader> gaussShader;
+    std::unique_ptr<ppgso::Shader> combineShader;
+
+    bool horizontal = true;
+    bool first_iteration = true;
+    int blurIterations = 15;
+    float thresholdValue = 1.0f;
+    float bloomIntensity = 1.5f;
+
 };
