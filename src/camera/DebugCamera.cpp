@@ -8,7 +8,7 @@ void DebugCamera::update(float dt) {
     handleMovement(dt);
     handleRotation(dt);
     camera->update();
-    logState();
+    // logState();
 }
 
 void DebugCamera::handleMovement(float dt) {

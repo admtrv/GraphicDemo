@@ -5,6 +5,7 @@
 #pragma once
 
 #include "StaticObject.h"
+#include "Glass.h"
 
 #define ARCADE_FACTOR   2.0f
 #define ARCADE_WIDTH    (2.5f * ARCADE_FACTOR)

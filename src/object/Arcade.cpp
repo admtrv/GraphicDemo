@@ -3,7 +3,6 @@
  */
 
 #include "Arcade.h"
-#include "Glass.h"
 
 std::vector<std::string> arcadeTextures = {
         "arcade1.bmp",

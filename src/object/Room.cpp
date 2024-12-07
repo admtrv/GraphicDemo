@@ -3,7 +3,7 @@
 
 const unsigned int BALLTEXTURE[] {15,14,6,13,12,7,5,4,11,3,10,9,2,1,8,0};
 
-Room::Room() {
+Room::Room(Scene& scene) {
     // floor
     auto floor = std::make_unique<StaticObject>("floor.bmp");
     floor->position = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -52,8 +52,8 @@ Room::Room() {
     }
 }
 
-void Room::addArcades() {
-    generateArcade();
+void Room::addArcades(Scene& scene) {
+    generateArcade(scene);
 }
 
 void Room::addBilliards() {
@@ -78,7 +78,7 @@ Dartboard* Room::addDartboards() {
 }
 
 // random arcade generation
-void Room::generateArcade() {
+void Room::generateArcade(Scene& scene) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> textureDist(0, arcadeTextures.size() - 1);
@@ -134,6 +134,18 @@ void Room::generateArcade() {
         );
 
         arcadeMachine->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
+
+        glm::vec3 neonColor = (i % 2 == 0)
+                              ? glm::vec3(1.0f, 0.0f, 1.0f)
+                              : glm::vec3(0.0f, 1.0f, 1.0f);
+
+        Light neonLight(
+                arcadeMachine->position + glm::vec3(0.0f, ARCADE_HEIGHT, 0.0f),
+                neonColor,
+                5.0f
+        );
+
+        scene.lights.push_back(neonLight);
 
         addChild(std::move(arcadeMachine));
     }
@@ -224,7 +236,7 @@ void Room::generateBilliards() {
     }
 }
 
-void Room::addChandeliers() {
+void Room::addChandeliers(Scene& scene) {
     float chandelierY = ROOM_HEIGHT - 4.0f;
     float startZ = - (ROOM_DEPTH / 2.0f) + BILLIARD_WIDTH * 2.0f;
     float stepZ = BILLIARD_WIDTH * 2.0f;
@@ -237,6 +249,15 @@ void Room::addChandeliers() {
                 chandelierY,
                 startZ + i * stepZ
         );
+
+        Light warmLight(
+                chandelier->position,
+                glm::vec3(0.0f, -1.0f, 0.0f),
+                glm::vec3(1.0f, 0.8f, 0.5f),
+                5.0f
+        );
+
+        scene.lights.push_back(warmLight);
 
         addChild(std::move(chandelier));
     }

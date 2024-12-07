@@ -22,16 +22,17 @@
 
 class Room : public VirtualObject {
 public:
-    Room();
+    explicit Room(Scene& scene);
 
-    void addArcades();
+    void addArcades(Scene& scene);
+    void addChandeliers(Scene& scene);
+
     void addBilliards();
     Dartboard* addDartboards();
-    void addChandeliers();
 
 private:
     std::vector<std::unique_ptr<CollisionGroup>> collisionGroups;
 
-    void generateArcade();
+    void generateArcade(Scene& scene);
     void generateBilliards();
 };

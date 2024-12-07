@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "glm/gtx/string_cast.hpp"
 #include <shaders/diffuse_vert_glsl.h>
 #include <shaders/diffuse_frag_glsl.h>
 Scene::Scene(){
@@ -43,8 +44,10 @@ void Scene::render() {
     glClear(GL_DEPTH_BUFFER_BIT);
 
     shader->use();
+
     shader->setUniform("ProjectionMatrix", directionalLight->projectionMatrix);
     shader->setUniform("ViewMatrix", directionalLight->viewMatrix);
+
     for (auto& obj : objects) {
         obj->render(shader.get());
     }
@@ -61,6 +64,31 @@ void Scene::render() {
     shader->setUniform("ViewMatrix", camera->viewMatrix);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, shadowMap->depthMap);
+
+    shader->setUniform("LightCount", static_cast<int>(lights.size()));
+
+    for (size_t i = 0; i < lights.size(); ++i) {
+        shader->setUniform("AdditionalLightPositions[" + std::to_string(i) + "]", lights[i].getPosition());
+        shader->setUniform("AdditionalLightColors[" + std::to_string(i) + "]", lights[i].getColor());
+        shader->setUniform("AdditionalLightIntensities[" + std::to_string(i) + "]", lights[i].getIntensity());
+        shader->setUniform("AdditionalLightTypes[" + std::to_string(i) + "]", lights[i].isDirectionalLight() ? 1 : 0);
+        if (lights[i].isDirectionalLight()) {
+            shader->setUniform("AdditionalLightDirections[" + std::to_string(i) + "]", lights[i].getDirection());
+        }
+    }
+
+
+    std::cout << "LightCount: " << lights.size() << std::endl;
+    for (size_t i = 0; i < lights.size(); ++i) {
+        std::cout << "Light " << i << ": Position = " << glm::to_string(lights[i].getPosition())
+                  << ", Direction = " << glm::to_string(lights[i].getDirection())
+                  << ", Color = " << glm::to_string(lights[i].getColor())
+                  << ", Intensity = " << lights[i].getIntensity()
+                  << ", Type = " << (lights[i].isDirectionalLight() ? "Directional" : "Point") << std::endl;
+    }
+
+
+
     // render all objects in the scene
     for (auto& obj : objects) {
         obj->render(shader.get());

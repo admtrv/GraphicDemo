@@ -13,7 +13,7 @@
 #include "src/object/StaticObject.h"
 #include "src/camera/Camera.h"
 #include "src/camera/ShadowMap.h"
-
+#include "src/light/Light.h"
 // scene aggregates all scene-related data, including objects and camera
 class Scene {
 public:
@@ -21,6 +21,8 @@ public:
 
     void update(float time);    // update all objects in the scene
     void render();              // render all objects in the scene
+
+    std::vector<Light> lights;
 
     int windowWidth, windowHeight;
     std::unique_ptr<Camera> camera;                 // camera object

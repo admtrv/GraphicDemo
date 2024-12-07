@@ -42,18 +42,18 @@ private:
         scene.directionalLight = std::move(directionalLight);
 
         // create room
-        auto room = std::make_unique<Room>();
+        auto room = std::make_unique<Room>(scene);
         auto* roomPtr = room.get();
         scene.objects.push_back(std::move(room));
 
         // create arcade automates
-        roomPtr->addArcades();
+        roomPtr->addArcades(scene);
 
         // create billiard tables
         roomPtr->addBilliards();
 
         // create chandeliers above billiard tables
-        roomPtr->addChandeliers();
+        roomPtr->addChandeliers(scene);
 
         // create dartboards
         activeDartboard = roomPtr->addDartboards();

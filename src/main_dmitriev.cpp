@@ -9,9 +9,12 @@
 #include <ppgso/ppgso.h>
 
 #include "scene/Scene.h"
-#include "camera/Camera.h"
+#include "src/camera/PersCamera.h"
+#include "src/camera/OrthoCamera.h"
 #include "camera/DebugCamera.h"
 #include "object/Room.h"
+#include "object/Dartboard.h"
+
 
 #define WINDOW_WIDTH    1024
 #define WINDOW_HEIGHT   512
@@ -25,25 +28,31 @@ private:
         if (!scene.objects.empty()) return;
 
         // create camera
-        auto camera = std::make_unique<Camera>(60.0f, (float)width / (float)height, 0.1f, 100.0f);
+        auto camera = std::make_unique<PersCamera>(60.0f, (float)width / (float)height, 0.1f, 100.0f);
         camera->position = glm::vec3(0.0f, 5.0f, 20.0f);
         camera->direction = glm::vec3(0.0f, 0.0f, -1.0f);
         debugCamera = std::make_unique<DebugCamera>(camera.get());
         scene.camera = std::move(camera);
 
+        // create directional Light
+        auto directionalLight = std::make_unique<OrthoCamera>(-20.0f, 20.0f, -10.0f, 20.0f, 0.1f, 50.0f);
+        directionalLight->position = glm::vec3(15.0f, 5.0f, -2.0f);
+        directionalLight->direction = glm::normalize(-directionalLight->position);
+        scene.directionalLight = std::move(directionalLight);
+
         // create room
-        auto room = std::make_unique<Room>();
+        auto room = std::make_unique<Room>(scene);
         auto* roomPtr = room.get();
         scene.objects.push_back(std::move(room));
 
         // create arcade automates
-        roomPtr->addArcades();
+        roomPtr->addArcades(scene);
 
         // create billiard tables
         roomPtr->addBilliards();
 
         // create chandeliers above billiard tables
-        roomPtr->addChandeliers();
+        roomPtr->addChandeliers(scene);
 
         // create dartboards
         roomPtr->addDartboards();
