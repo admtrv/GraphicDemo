@@ -70,12 +70,33 @@ public:
         glCullFace(GL_BACK);
 
         initScene();
+        scene.setupPostProcessing();
+        scene.loadPostProcessShaders();
     }
 
     void onKey(int key, int scanCode, int action, int mods) override {
         debugCamera->keyboard[key] = action;
         if(key == GLFW_KEY_X && action){
             activeDartboard->throwDart();
+        }
+
+        if (key == GLFW_KEY_M && action == GLFW_PRESS) {
+            switch(scene.currentFilter) {
+                case PostProcessMode::NONE:
+                    scene.currentFilter = PostProcessMode::GRAYSCALE;
+                    break;
+                case PostProcessMode::GRAYSCALE:
+                    scene.currentFilter = PostProcessMode::BLUR;
+                    break;
+                case PostProcessMode::BLUR:
+                    scene.currentFilter = PostProcessMode::NONE;
+                    break;
+                //case PostProcessMode::BLOOM:
+                    //scene.currentFilter = PostProcessMode::NONE;
+                    //break;
+                default:
+                    return;
+            }
         }
     }
 
