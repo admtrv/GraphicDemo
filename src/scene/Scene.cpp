@@ -82,12 +82,12 @@ void Scene::render() {
         if(light.isDirectionalLight()){
             AdditionalDirectionalLightPositions[AdditionalDirectionalLightCount] = light.getPosition();
             AdditionalDirectionalLightDirections[AdditionalDirectionalLightCount] = light.getDirection();
-            AdditionalDirectionalLightColors[AdditionalDirectionalLightCount] = light.getPosition();
+            AdditionalDirectionalLightColors[AdditionalDirectionalLightCount] = light.getColor();
             AdditionalDirectionalLightIntensities[AdditionalDirectionalLightCount] = light.getIntensity();
             AdditionalDirectionalLightCount++;
         } else {
             AdditionalLightPositions[AdditionalLightCount] = light.getPosition();
-            AdditionalLightColors[AdditionalLightCount] = light.getPosition();
+            AdditionalLightColors[AdditionalLightCount] = light.getColor();
             AdditionalLightIntensities[AdditionalLightCount] = light.getIntensity();
             AdditionalLightCount++;
         }
@@ -95,7 +95,7 @@ void Scene::render() {
 
     for (int i = 0; i < AdditionalDirectionalLightCount; i++){
         shader->setUniform("AdditionalDirectionalLightPositions[" + std::to_string(i) + "]", AdditionalDirectionalLightPositions[i]);
-        shader->setUniform("AdditionalDirectionalLightDirections", AdditionalDirectionalLightDirections[i]);
+        shader->setUniform("AdditionalDirectionalLightDirections[" + std::to_string(i) + "]", AdditionalDirectionalLightDirections[i]);
         shader->setUniform("AdditionalDirectionalLightColors[" + std::to_string(i) + "]", AdditionalDirectionalLightColors[i]);
         shader->setUniform("AdditionalDirectionalLightIntensities[" + std::to_string(i) + "]", AdditionalDirectionalLightIntensities[i]);
     }

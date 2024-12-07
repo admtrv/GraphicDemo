@@ -135,16 +135,9 @@ void Room::generateArcade(Scene& scene) {
 
         arcadeMachine->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
 
-        glm::vec3 neonColor = (i % 2 == 0)
-                              ? glm::vec3(1.0f, 0.0f, 1.0f)
-                              : glm::vec3(0.0f, 1.0f, 1.0f);
+        glm::vec3 neonColor = (i % 2 == 0) ? glm::vec3(1.0f, 0.0f, 1.0f) : glm::vec3(0.0f, 1.0f, 1.0f);
 
-        Light neonLight(
-                arcadeMachine->position + glm::vec3(0.0f, ARCADE_HEIGHT, 0.0f),
-                neonColor,
-                5.0f
-        );
-
+        Light neonLight(arcadeMachine->position + glm::vec3(0.0f, ARCADE_HEIGHT / 2.0f, (ARCADE_WIDTH / 2.0f)),neonColor,1.0f);
         scene.lights.push_back(neonLight);
 
         addChild(std::move(arcadeMachine));
@@ -250,13 +243,7 @@ void Room::addChandeliers(Scene& scene) {
                 startZ + i * stepZ
         );
 
-        Light warmLight(
-                chandelier->position,
-                glm::vec3(0.0f, -1.0f, 0.0f),
-                glm::vec3(1.0f, 0.8f, 0.5f),
-                5.0f
-        );
-
+        Light warmLight(chandelier->position + glm::vec3(0.0f, 1.0f, 0.0f),glm::vec3(0.0f, -1.0f, 0.0f),glm::vec3(0.8, 0.5, -0.1),1.5f);
         scene.lights.push_back(warmLight);
 
         addChild(std::move(chandelier));

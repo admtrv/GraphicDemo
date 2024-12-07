@@ -2,7 +2,7 @@
 
 Glass::Glass() : StaticObject("glass.bmp", "cube.obj") {
     scale = glm::vec3(1.5f, 1.5f, 0.01f);
-    transparency = 0.5f;
+    transparency = 0.3f;
 }
 
 void Glass::renderInternal(ppgso::Shader *shader) {

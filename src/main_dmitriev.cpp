@@ -15,7 +15,6 @@
 #include "object/Room.h"
 #include "object/Dartboard.h"
 
-
 #define WINDOW_WIDTH    1024
 #define WINDOW_HEIGHT   512
 
@@ -23,10 +22,12 @@ class SceneWindow : public ppgso::Window {
 private:
     Scene scene;
     std::unique_ptr<DebugCamera> debugCamera;
+    Dartboard* activeDartboard;
 
     void initScene() {
         if (!scene.objects.empty()) return;
-
+        scene.windowWidth = WINDOW_WIDTH;
+        scene.windowHeight = WINDOW_HEIGHT;
         // create camera
         auto camera = std::make_unique<PersCamera>(60.0f, (float)width / (float)height, 0.1f, 100.0f);
         camera->position = glm::vec3(0.0f, 5.0f, 20.0f);
@@ -55,7 +56,7 @@ private:
         roomPtr->addChandeliers(scene);
 
         // create dartboards
-        roomPtr->addDartboards();
+        activeDartboard = roomPtr->addDartboards();
     }
 
 
@@ -73,6 +74,9 @@ public:
 
     void onKey(int key, int scanCode, int action, int mods) override {
         debugCamera->keyboard[key] = action;
+        if(key == GLFW_KEY_X && action){
+            activeDartboard->throwDart();
+        }
     }
 
     void onIdle() override {
@@ -84,10 +88,6 @@ public:
 
         time = (float) glfwGetTime();
 
-        // set gray background
-        glClearColor(.5f, .5f, .5f, 0);
-        // clear depth and color buffers
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // update and render all objects
         debugCamera->update(dt);

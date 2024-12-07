@@ -55,18 +55,41 @@ void main() {
     vec3 mainLighting = (0.2 + (1.0 - shadow) * diffuse) * vec3(1.0);
 
     vec3 additionalLighting = vec3(0.0);
-    for (int i = 0; i < LightCount; ++i) {
-        vec3 lightDir;
-        lightDir = normalize(AdditionalLightPositions[0] - fragPos);
-        float lightDiffuse = max(dot(norm, lightDir), 0.0);
-        additionalLighting += lightDiffuse * AdditionalLightIntensities[0] * AdditionalLightColors[0];
+
+    // point light
+    float pointRadius = 15.0;
+    for (int i = 0; i < int(LightCount); ++i) {
+        vec3 toFrag = fragPos - AdditionalLightPositions[i];
+        float distance = length(toFrag);
+
+        if (distance < pointRadius) {
+            float attenuation = 1.0 - (distance / pointRadius);
+            vec3 lightDir = normalize(-toFrag);
+            float lightDiffuse = max(dot(norm, lightDir), 0.0);
+            additionalLighting += lightDiffuse * AdditionalLightIntensities[i] * AdditionalLightColors[i] * attenuation;
+        }
     }
-    for (int i = 0; i < AdditionalDirectionalLightCount; ++i) {
-        vec3 lightDir;
-        lightDir = normalize(-AdditionalDirectionalLightDirections[0]);
-        float lightDiffuse = max(dot(norm, lightDir), 0.0);
-        additionalLighting += lightDiffuse * AdditionalDirectionalLightIntensities[0] * AdditionalDirectionalLightColors[0];
+
+    // linear light
+    float beamRadius = 3.5;
+    for (int i = 0; i < int(AdditionalDirectionalLightCount); ++i) {
+        vec3 Lpos = AdditionalDirectionalLightPositions[i];
+        vec3 Ldir = normalize(-AdditionalDirectionalLightDirections[i]);
+        vec3 toFrag = Lpos - fragPos;
+
+        float alongBeam = dot(toFrag, Ldir);
+        if (alongBeam > 0.0) {
+            vec3 projected = Ldir * alongBeam;
+            float distFromAxis = length(toFrag - projected);
+
+            if (distFromAxis < beamRadius) {
+                float attenuation = 1.0 - (distFromAxis / beamRadius);
+                float lightDiffuse = max(dot(norm, Ldir), 0.0);
+                additionalLighting += lightDiffuse * AdditionalDirectionalLightIntensities[i] * AdditionalDirectionalLightColors[i] * attenuation;
+            }
+        }
     }
+
     vec3 finalLighting = mainLighting + additionalLighting;
 
     const float gamma = 2.2;
