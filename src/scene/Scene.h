@@ -11,6 +11,8 @@
 
 #include "src/object/Object.h"
 #include "src/object/StaticObject.h"
+#include "src/object/Dartboard.h"
+#include "src/object/BilliardBall.h"
 #include "src/camera/Camera.h"
 #include "src/camera/ShadowMap.h"
 #include "src/light/Light.h"
@@ -27,7 +29,7 @@ class Scene {
 public:
     explicit Scene();
 
-    void update(float time);    // update all objects in the scene
+    void update(float dt);    // update all objects in the scene
     void render();              // render all objects in the scene
 
     std::vector<Light> lights;
@@ -45,6 +47,21 @@ public:
     void loadPostProcessShaders();
     void loadBloomShaders();
     PostProcessMode currentFilter = PostProcessMode::NONE;
+
+    std::vector<glm::vec3> cameraControlPositions;
+    std::vector<glm::vec3> cameraControlDirections;
+    std::vector<float> cameraControlTimes;
+    float time = 0.0f;
+
+    Dartboard* activeDartboard;
+    BilliardBall* activeBall;
+    float lastDartTime = 0;
+    bool billiardActive = false;
+    bool moving = false;
+
+    glm::vec3 bezierPoint(const glm::vec3 &p0, const glm::vec3 &p1, const glm::vec3 &p2, const glm::vec3 &p3, const float t);
+    void bezierShape(int count);
+    void bezierMove(float dt);
 
 private:
     unsigned int fbo = 0;

@@ -21,20 +21,32 @@ Scene::Scene(){
     glUniform1i(texture_attrib, 1);
 }
 
-void Scene::update(float time) {
+void Scene::update(float dt) {
     // update the camera if it exists
     if (camera) {
+        if(moving) bezierMove(dt);
         camera->update();
     }
     if (directionalLight) {
         directionalLight->update();
     }
+    if(time > cameraControlTimes[1] && time < cameraControlTimes[3]) {
+        if(time-lastDartTime > 1.0f){
+            lastDartTime = time;
+            activeDartboard->throwDart();
+        }
+    }
+    if(time > cameraControlTimes[3] && !billiardActive) {
+        billiardActive = true;
+
+        activeBall->speed = glm::vec3(glm::linearRand(glm::vec2(-5,-100),glm::vec2(5,-160)),0);
+    }
 
     // update all objects and remove those that not alive
     objects.erase(
             std::remove_if(objects.begin(), objects.end(),
-                           [this, time](const std::unique_ptr<Object>& obj) {
-                               return !obj->update(time);
+                           [this, dt](const std::unique_ptr<Object>& obj) {
+                               return !obj->update(dt);
                            }),
             objects.end()
     );
@@ -58,7 +70,7 @@ void Scene::render() {
     glBindFramebuffer(GL_FRAMEBUFFER, fbo); // switching to FBO to render the scene
     glViewport(0, 0, windowWidth, windowHeight);
     glCullFace(GL_BACK);
-    glClearColor(.5f, .5f, .5f, 0);
+    glClearColor(.5f, .5f, .8f, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // 2) rendering scene with shadows and additional sources in FBO
@@ -114,14 +126,14 @@ void Scene::render() {
     }
     shader->setUniform("AdditionalLightCount", (float)AdditionalLightCount);
 
-    std::cout << "LightCount: " << lights.size() << std::endl;
+    /*std::cout << "LightCount: " << lights.size() << std::endl;
     for (size_t i = 0; i < lights.size(); ++i) {
         std::cout << "Light " << i << ": Position = " << glm::to_string(lights[i].getPosition())
                   << ", Direction = " << glm::to_string(lights[i].getDirection())
                   << ", Color = " << glm::to_string(lights[i].getColor())
                   << ", Intensity = " << lights[i].getIntensity()
                   << ", Type = " << (lights[i].isDirectionalLight() ? "Directional" : "Point") << std::endl;
-    }
+    }*/
 
     // drawing objects in FBO
     for (auto& obj : objects) {
@@ -294,4 +306,55 @@ void Scene::loadBloomShaders() {
     thresholdShader = std::make_unique<ppgso::Shader>(postprocess_vert_glsl, threshold_frag_glsl);
     gaussShader = std::make_unique<ppgso::Shader>(postprocess_vert_glsl, gauss_frag_glsl);
     combineShader = std::make_unique<ppgso::Shader>(postprocess_vert_glsl, combine_frag_glsl);
+}
+
+// Compute points for Bezier curve using 4 control points
+glm::vec3 Scene::bezierPoint(const glm::vec3 &p0, const glm::vec3 &p1, const glm::vec3 &p2, const glm::vec3 &p3, const float t) {
+    glm::vec3 p11 = glm::lerp(p0,p1,t);
+    glm::vec3 p21 = glm::lerp(p1,p2,t);
+    glm::vec3 p31 = glm::lerp(p2,p3,t);
+
+    glm::vec3 p22 = glm::lerp(p11,p21,t);
+    glm::vec3 p32 = glm::lerp(p21,p31,t);
+
+    glm::vec3 p33 = glm::lerp(p22,p32,t);
+    return p33;
+}
+
+// Compute points for a sequence of Bezier curves defined by a vector of control points
+// Each bezier curve will reuse the end point of the previous curve
+// count - Number of points to generate on each curve
+void Scene::bezierShape(int count) {
+    for(int i = 1; i < (int) cameraControlPositions.size(); i+=3) {
+        for (int j = 0; j <= count; j++) {
+            glm::vec3 point = bezierPoint(cameraControlPositions[i - 1], cameraControlPositions[i], cameraControlPositions[i + 1], cameraControlPositions[i + 2], (float)(j) / (float)(count));
+            auto ball = std::make_unique<StaticObject>("sphere.bmp", "sphere.obj");
+            ball->position = point;
+            ball->scale = glm::vec3(0.1,0.1,0.1);
+            objects.push_back(std::move(ball));
+        }
+    }
+
+    for (int i = 0; i < (int) cameraControlPositions.size(); i++){
+        auto s = std::make_unique<StaticObject>("sphere.bmp","sphere.obj");
+        s->position = cameraControlPositions[i];
+        objects.push_back(std::move(s));s = std::make_unique<StaticObject>("sphere.bmp","sphere.obj");
+    }
+}
+
+
+void Scene::bezierMove(float dt) {
+    time += dt;
+    int i = 1;
+    while (i < cameraControlTimes.size()){
+        if (cameraControlTimes[i] > time) break;
+        i++;
+    }
+    int j = i*3;
+    if(j < cameraControlPositions.size()){
+        float ratio = (time - cameraControlTimes[i-1])/(cameraControlTimes[i] - cameraControlTimes[i-1]);
+        //std::cout <<"i:" << i << " time: " << time << " ratio: " << ratio << "\n";
+        camera->position = bezierPoint(cameraControlPositions[j-3], cameraControlPositions[j - 2], cameraControlPositions[j - 1], cameraControlPositions[j], ratio);
+        camera->direction = bezierPoint(cameraControlDirections[j-3], cameraControlDirections[j - 2], cameraControlDirections[j - 1], cameraControlDirections[j], ratio);;
+    }
 }

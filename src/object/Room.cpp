@@ -22,6 +22,12 @@ Room::Room(Scene& scene) {
     backWall->scale = glm::vec3(ROOM_WIDTH, ROOM_HEIGHT, ROOM_WALL_THICKNESS);
     addChild(std::move(backWall));
 
+    // front wall
+    auto frontWall = std::make_unique<StaticObject>("wall.bmp");
+    frontWall->position = glm::vec3(0.0f, ROOM_HEIGHT / 2.0f, ROOM_DEPTH / 2.0f);
+    frontWall->scale = glm::vec3(ROOM_WIDTH, ROOM_HEIGHT, ROOM_WALL_THICKNESS);
+    addChild(std::move(frontWall));
+
     // left wall
     auto leftWall = std::make_unique<StaticObject>("wall.bmp");
     leftWall->position = glm::vec3(-ROOM_WIDTH / 2.0f, ROOM_HEIGHT / 2.0f, 0.0f);
@@ -31,14 +37,14 @@ Room::Room(Scene& scene) {
 
     // right wall
     auto rightWallBottom = std::make_unique<StaticObject>("wall.bmp");
-    rightWallBottom->position = glm::vec3(ROOM_WIDTH / 2.0f, ROOM_HEIGHT / 6.0f, 0.0f);
-    rightWallBottom->scale = glm::vec3(ROOM_DEPTH, ROOM_HEIGHT/3.0f, ROOM_WALL_THICKNESS);
+    rightWallBottom->position = glm::vec3(ROOM_WIDTH / 2.0f, ROOM_HEIGHT / 8.0f, 0.0f);
+    rightWallBottom->scale = glm::vec3(ROOM_DEPTH, ROOM_HEIGHT/4.0f, ROOM_WALL_THICKNESS);
     rightWallBottom->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
     addChild(std::move(rightWallBottom));
 
     auto rightWallTop = std::make_unique<StaticObject>("wall.bmp");
-    rightWallTop->position = glm::vec3(ROOM_WIDTH / 2.0f,  ROOM_HEIGHT * 5.0f / 6.0f, 0.0f);
-    rightWallTop->scale = glm::vec3(ROOM_DEPTH, ROOM_HEIGHT/3.0f, ROOM_WALL_THICKNESS);
+    rightWallTop->position = glm::vec3(ROOM_WIDTH / 2.0f,  ROOM_HEIGHT * 7.0f / 8.0f, 0.0f);
+    rightWallTop->scale = glm::vec3(ROOM_DEPTH, ROOM_HEIGHT/4.0f, ROOM_WALL_THICKNESS);
     rightWallTop->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
     addChild(std::move(rightWallTop));
 
@@ -46,7 +52,7 @@ Room::Room(Scene& scene) {
     for (int i = 0; i < 4; i++) {
         rightWallSegment = std::make_unique<StaticObject>("wall.bmp");
         rightWallSegment->position = glm::vec3(ROOM_WIDTH / 2.0f,  ROOM_HEIGHT / 2.0f, ROOM_DEPTH / 2.0f - ROOM_DEPTH / 16.0f - i * ROOM_DEPTH / 4.0f);
-        rightWallSegment->scale = glm::vec3(ROOM_DEPTH/8, ROOM_HEIGHT/3.0f, ROOM_WALL_THICKNESS);
+        rightWallSegment->scale = glm::vec3(ROOM_DEPTH/8, ROOM_HEIGHT/2.0f, ROOM_WALL_THICKNESS);
         rightWallSegment->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
         addChild(std::move(rightWallSegment));
     }
@@ -56,8 +62,8 @@ void Room::addArcades(Scene& scene) {
     generateArcade(scene);
 }
 
-void Room::addBilliards() {
-    generateBilliards();
+BilliardBall* Room::addBilliards() {
+    return generateBilliards();
 }
 
 Dartboard* Room::addDartboards() {
@@ -144,9 +150,11 @@ void Room::generateArcade(Scene& scene) {
     }
 }
 
-void Room::generateBilliards() {
+BilliardBall* Room::generateBilliards() {
     float startZ = - (ROOM_DEPTH / 2.0f) + BILLIARD_WIDTH * 2.0f;
     float stepZ = BILLIARD_WIDTH * 2.0f;
+
+    BilliardBall* activeBall;
 
     for (int i = 0; i < BILLIARD_NUM; i++) {
         auto billiard = std::make_unique<Billiard>();
@@ -202,11 +210,12 @@ void Room::generateBilliards() {
         auto ball = std::make_unique<BilliardBall>();
         ball->collisionGroup = collisionGroup.get();
         ball->position = glm::vec3{0,69,74};
-        ball->speed = glm::vec3(0,-100,0);
+        ball->speed = glm::vec3(0,0,0);
         ball->radius = ball->scale.x/2;
         ball->setTextureSize(glm::vec2(64,64));
         ball->setTextureOffset(glm::vec2(0,64*BALLTEXTURE[ballId]));
         collisionGroup->AddCollider(ball.get());
+        if (i == 0) activeBall = ball.get();
         billiard->addChild(std::move(ball));
 
         for (int i = 0; i < 5; i++){
@@ -227,6 +236,7 @@ void Room::generateBilliards() {
         collisionGroups.push_back(std::move(collisionGroup));
         addChild(std::move(billiard));
     }
+    return activeBall;
 }
 
 void Room::addChandeliers(Scene& scene) {

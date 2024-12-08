@@ -11,7 +11,7 @@ class ShadowMap {
 public:
     explicit ShadowMap();
 //private:
-    const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 512;
+    const unsigned int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 2048;
     unsigned int depthMapFBO;
     unsigned int depthMap;
 

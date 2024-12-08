@@ -10,7 +10,6 @@
 #include <shaders/diffuse_vert_glsl.h>
 #include <shaders/diffuse_frag_glsl.h>
 
-#include "src/scene/Scene.h"
 #include "src/object/Object.h"
 
 class StaticObject : public Object {

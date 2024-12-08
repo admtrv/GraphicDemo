@@ -27,12 +27,12 @@ public:
     void addArcades(Scene& scene);
     void addChandeliers(Scene& scene);
 
-    void addBilliards();
+    BilliardBall* addBilliards();
     Dartboard* addDartboards();
 
 private:
     std::vector<std::unique_ptr<CollisionGroup>> collisionGroups;
 
     void generateArcade(Scene& scene);
-    void generateBilliards();
+    BilliardBall* generateBilliards();
 };
