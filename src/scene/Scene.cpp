@@ -97,16 +97,16 @@ void Scene::render() {
     int AdditionalLightCount = 0;
 
     for (auto light : lights) {
-        if(light.isDirectionalLight()) {
-            AdditionalDirectionalLightPositions[AdditionalDirectionalLightCount] = light.getPosition();
-            AdditionalDirectionalLightDirections[AdditionalDirectionalLightCount] = light.getDirection();
-            AdditionalDirectionalLightColors[AdditionalDirectionalLightCount] = light.getColor();
-            AdditionalDirectionalLightIntensities[AdditionalDirectionalLightCount] = light.getIntensity();
+        if(light->isDirectionalLight()) {
+            AdditionalDirectionalLightPositions[AdditionalDirectionalLightCount] = light->getPosition();
+            AdditionalDirectionalLightDirections[AdditionalDirectionalLightCount] = light->getDirection();
+            AdditionalDirectionalLightColors[AdditionalDirectionalLightCount] = light->getColor();
+            AdditionalDirectionalLightIntensities[AdditionalDirectionalLightCount] = light->getIntensity();
             AdditionalDirectionalLightCount++;
         } else {
-            AdditionalLightPositions[AdditionalLightCount] = light.getPosition();
-            AdditionalLightColors[AdditionalLightCount] = light.getColor();
-            AdditionalLightIntensities[AdditionalLightCount] = light.getIntensity();
+            AdditionalLightPositions[AdditionalLightCount] = light->getPosition();
+            AdditionalLightColors[AdditionalLightCount] = light->getColor();
+            AdditionalLightIntensities[AdditionalLightCount] = light->getIntensity();
             AdditionalLightCount++;
         }
     }

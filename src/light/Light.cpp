@@ -34,3 +34,7 @@ float Light::getIntensity() const {
 bool Light::isDirectionalLight() const {
     return isDirectional;
 }
+
+void Light::setColor(const glm::vec3 &color) {
+    this->color = color;
+}

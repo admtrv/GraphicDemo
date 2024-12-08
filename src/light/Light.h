@@ -12,6 +12,7 @@ public:
     glm::vec3 getDirection() const;
     void setDirection(const glm::vec3& direction);
     glm::vec3 getColor() const;
+    void setColor(const glm::vec3& color);
     float getIntensity() const;
     bool isDirectionalLight() const;
 

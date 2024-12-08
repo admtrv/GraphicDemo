@@ -32,7 +32,7 @@ public:
     void update(float dt);    // update all objects in the scene
     void render();              // render all objects in the scene
 
-    std::vector<Light> lights;
+    std::vector<Light*> lights;
 
     int windowWidth, windowHeight;
     std::unique_ptr<Camera> camera;                 // camera object
