@@ -50,10 +50,15 @@ float ShadowCalculation(vec4 FragPosLightSpace) {
 void main() {
     vec3 norm = normalize(normal);
 
+    // ambient light
+    vec3 ambientLight = vec3(0.1);
+
+    // main light
     float diffuse = max(dot(norm, normalize(LightDirection)), 0.0);
     float shadow = ShadowCalculation(fragPosLightSpace);
     vec3 mainLighting = (0.2 + (1.0 - shadow) * diffuse) * vec3(1.0);
 
+    // additional light
     vec3 additionalLighting = vec3(0.0);
 
     // point light
@@ -90,11 +95,14 @@ void main() {
         }
     }
 
-    vec3 finalLighting = mainLighting + additionalLighting;
+    // final light
+    vec3 finalLighting = ambientLight + mainLighting + additionalLighting;
 
+    // gamma correction
     const float gamma = 2.2;
     finalLighting = pow(finalLighting, vec3(1.0 / gamma));
 
+    // final fragment color
     vec4 texColor = texture(Texture, vec2(texCoord.x, 1.0 - texCoord.y));
     FragmentColor = vec4(texColor.rgb * finalLighting, texColor.a * Transparency);
 }

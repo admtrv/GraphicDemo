@@ -65,8 +65,8 @@ private:
 
     bool horizontal = true;
     bool first_iteration = true;
-    int blurIterations = 15;
-    float thresholdValue = 1.0f;
-    float bloomIntensity = 1.5f;
+    int blurIterations = 10;
+    float thresholdValue = 0.5f;
+    float bloomIntensity = 1.0f;
 
 };
