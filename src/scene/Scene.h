@@ -63,6 +63,9 @@ public:
     void bezierShape(int count);
     void bezierMove(float dt);
 
+    float shininess =  32.0f;
+    float specularIntensity = 1.0f;
+
 private:
     unsigned int fbo = 0;
     unsigned int colorTexture = 0;

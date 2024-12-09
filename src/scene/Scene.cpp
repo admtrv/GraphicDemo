@@ -79,6 +79,9 @@ void Scene::render() {
     shader->setUniform("LightDirection", light);
     shader->setUniform("ProjectionMatrix", camera->projectionMatrix);
     shader->setUniform("ViewMatrix", camera->viewMatrix);
+    shader->setUniform("ViewPos", camera->position);
+    shader->setUniform("shininess", shininess);
+    shader->setUniform("specularIntensity", specularIntensity);
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, shadowMap->depthMap);

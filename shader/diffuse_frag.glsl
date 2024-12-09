@@ -2,8 +2,10 @@
 
 uniform sampler2D Texture;
 uniform sampler2D ShadowMap;
-
 uniform vec3 LightDirection;
+uniform vec3 ViewPos;
+uniform float shininess;
+uniform float specularIntensity;
 
 uniform vec3 AdditionalLightPositions[8];
 uniform vec3 AdditionalLightColors[8];
@@ -55,14 +57,24 @@ float ShadowCalculation(vec4 FragPosLightSpace) {
 
 void main() {
     vec3 norm = normalize(normal);
+    vec3 viewDir = normalize(ViewPos - fragPos);
 
     // ambient light
     vec3 ambientLight = vec3(0.1);
 
     // main light
-    float diffuse = max(dot(norm, normalize(LightDirection)), 0.0);
+    vec3 lightDir = normalize(LightDirection);
+    float diffuse = max(dot(norm, lightDir), 0.0);
     float shadow = ShadowCalculation(fragPosLightSpace);
-    vec3 mainLighting = (0.2 + (1.0 - shadow) * diffuse) * vec3(1.0);
+
+    // main light reflect
+    vec3 reflectDir = reflect(-lightDir, norm);
+    float spec = 0.0;
+    if (diffuse > 0.0) {
+        spec = specularIntensity * pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+    }
+
+    vec3 mainLighting = (0.2 + (1.0 - shadow) * diffuse) * vec3(1.0) + (1.0 - shadow) * spec * vec3(1.0);
 
     // additional light
     vec3 additionalLighting = vec3(0.0);
@@ -77,7 +89,14 @@ void main() {
             float attenuation = 1.0 - (distance / pointRadius);
             vec3 lightDir = normalize(-toFrag);
             float lightDiffuse = max(dot(norm, lightDir), 0.0);
-            additionalLighting += lightDiffuse * AdditionalLightIntensities[i] * AdditionalLightColors[i] * attenuation;
+
+            // point light reflect
+            vec3 reflectDir = reflect(-lightDir, norm);
+            float pointSpec = 0.0;
+            if (lightDiffuse > 0.0)
+                pointSpec = specularIntensity * pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+
+            additionalLighting += (lightDiffuse + pointSpec) * AdditionalLightIntensities[i] * AdditionalLightColors[i] * attenuation;
         }
     }
 
@@ -96,7 +115,14 @@ void main() {
             if (distFromAxis < beamRadius) {
                 float attenuation = 1.0 - (distFromAxis / beamRadius);
                 float lightDiffuse = max(dot(norm, Ldir), 0.0);
-                additionalLighting += lightDiffuse * AdditionalDirectionalLightIntensities[i] * AdditionalDirectionalLightColors[i] * attenuation;
+
+                // linear light reflect
+                vec3 reflectDir = reflect(-Ldir, norm);
+                float dirSpec = 0.0;
+                if (lightDiffuse > 0.0)
+                    dirSpec = specularIntensity * pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+
+                additionalLighting += (lightDiffuse + dirSpec) * AdditionalDirectionalLightIntensities[i] * AdditionalDirectionalLightColors[i] * attenuation;
             }
         }
     }
