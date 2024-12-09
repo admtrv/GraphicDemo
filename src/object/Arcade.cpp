@@ -28,6 +28,6 @@ bool Arcade::updateInternal(float dt) {
     newColor.b = lightBaseColor.b * ((sin(time) + 1) / 2.0f);
 
     light->setColor(newColor);
-    std::cout << "color: " << light->getColor().r << "\n";
+    //std::cout << "color: " << light->getColor().r << "\n";
     return StaticObject::updateInternal(dt);
 }

@@ -129,13 +129,6 @@ add_executable(Herna
         src/object/Dartboard.cpp
         src/object/Chandelier.cpp
         src/object/Glass.cpp
-
-        src/camera/Camera.cpp
-        src/camera/OrthoCamera.cpp
-        src/camera/PersCamera.cpp
-        src/camera/DebugCamera.cpp
-        src/camera/ShadowMap.cpp
-
         src/object/BilliardBall.cpp
         src/object/BilliardWall.cpp
         src/object/CollisionGroup.cpp
@@ -143,90 +136,18 @@ add_executable(Herna
         src/object/ObjectResources.cpp
         src/object/Tree.cpp
         src/object/Outside.cpp
+
+        src/camera/Camera.cpp
+        src/camera/OrthoCamera.cpp
+        src/camera/PersCamera.cpp
+        src/camera/DebugCamera.cpp
+        src/camera/ShadowMap.cpp
 
         src/light/Light.cpp
 )
 target_link_libraries(Herna ppgso shaders)
 install(TARGETS Herna DESTINATION .)
 add_custom_command(TARGET Herna POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/ ${CMAKE_CURRENT_BINARY_DIR})
-
-# main_kocalka
-add_executable(HernaKocalka
-        src/main_kocalka.cpp
-
-        src/scene/Scene.cpp
-
-        src/object/Object.cpp
-        src/object/StaticObject.cpp
-        src/object/VirtualObject.cpp
-        src/object/Room.cpp
-        src/object/Arcade.cpp
-        src/object/Billiard.cpp
-        src/object/Dartboard.cpp
-        src/object/Chandelier.cpp
-        src/object/Glass.cpp
-
-        src/camera/Camera.cpp
-        src/camera/OrthoCamera.cpp
-        src/camera/PersCamera.cpp
-        src/camera/DebugCamera.cpp
-        src/camera/ShadowMap.cpp
-
-        src/object/BilliardBall.cpp
-        src/object/BilliardWall.cpp
-        src/object/CollisionGroup.cpp
-        src/object/ThrowingDart.cpp
-        src/object/ObjectResources.cpp
-        src/object/Tree.cpp
-        src/object/Outside.cpp
-
-        src/light/Light.cpp
-)
-target_link_libraries(HernaKocalka ppgso shaders)
-install(TARGETS HernaKocalka DESTINATION .)
-add_custom_command(TARGET HernaKocalka POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/ ${CMAKE_CURRENT_BINARY_DIR})
-
-# main_dmitriev
-add_executable(HernaDmitriev
-        src/main_dmitriev.cpp
-
-        src/scene/Scene.cpp
-
-        src/object/Object.cpp
-        src/object/StaticObject.cpp
-        src/object/VirtualObject.cpp
-        src/object/Room.cpp
-        src/object/Arcade.cpp
-        src/object/Billiard.cpp
-        src/object/Dartboard.cpp
-        src/object/Chandelier.cpp
-        src/object/Glass.cpp
-
-        src/camera/Camera.cpp
-        src/camera/OrthoCamera.cpp
-        src/camera/PersCamera.cpp
-        src/camera/DebugCamera.cpp
-        src/camera/ShadowMap.cpp
-
-        src/object/BilliardBall.cpp
-        src/object/BilliardBall.h
-        src/object/BilliardWall.cpp
-        src/object/BilliardWall.h
-        src/object/CollisionGroup.cpp
-        src/object/CollisionGroup.h
-        src/object/ThrowingDart.cpp
-        src/object/ThrowingDart.h
-        src/object/ObjectResources.cpp
-        src/object/ObjectResources.h
-
-        src/light/Light.cpp
-        src/object/Tree.cpp
-        src/object/Outside.cpp
-)
-target_link_libraries(HernaDmitriev ppgso shaders)
-
-install(TARGETS HernaDmitriev DESTINATION .)
-add_custom_command(TARGET HernaDmitriev POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data/ ${CMAKE_CURRENT_BINARY_DIR})
 
 #
 # INSTALLATION
